@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azla Language Learning</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+<body>
+    <center>
+    <form hx-post="/question">
+    <h1 class="app-title" id="app-title"><center>Azla Language Learning<center></h1>
+        <p><center>Select A wordlist and language</center></p>
+        <select name="languageOpt" id="languageOpt">
+            {{range .LanguageOptions}}
+                <option value={{.}}>{{.}}</option>
+            {{end}}
+        </select>
+        <select name="wordListOpt" class="entry-box">
+            {{range .WordListOptions}}
+                <option value="{{.}}">{{.}}</option>
+            {{end}}
+        </select>
+        <select name="wordCountOptions" class="entry-box">
+            {{range .MaxAmountOfWordsOptions}}
+                <option value="{{.}}">{{.}}</option>
+            {{end}}
+        </select>
+        <button type="submit" name="start">start</button>
+        <div>
+            <label for="examCheck">Exam Mode</label>
+            <input type="checkbox" id="examCheck" name="examMode" value="Exam Mode">
+        </div>
+        <p class="word-list"><p>
+    </form></center>
+</body>
+</html>
+
