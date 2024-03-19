@@ -3,6 +3,8 @@ package main
 // Static variables I set here
 // Plus the main pagedata I want to pass to the template
 
+import "fmt"
+
 // Language options
 var languageOptions []string = []string{"Azerbajani", "English"}
 
@@ -17,6 +19,7 @@ type PageData struct {
 	Words                   []string // For all words
 	Correct                 []string // For all correct answers
 	CurrentCorrect          string   // For the current correct answer
+	CurrentWord             string   // For the current correct answer
 	LanguageOptions         []string // Language Options
 	CurrentQuestion         int      // Current question index
 	CorrectAnswers          int      // Number of correct answer
@@ -28,3 +31,28 @@ type PageData struct {
 
 // Create table for the data to pass to the template
 var data = PageData{}
+
+func create_questionString(currentIndex int, currentWord string, data PageData, mode string)string {
+	var buttonType string
+	var buttonName string
+	
+	switch mode {
+	case "/submit":
+		buttonType = "Submit"
+		buttonName = "evaluate"
+		
+	case "/next":
+		buttonType = "Next"
+		buttonName = "next"
+
+	}
+	var questionString = fmt.Sprintf("<form hx-post='%s'>"+
+		"<h1 class='app-title'>AZLA</h1><p class='word-list'>%d What is <span class='wordQuestion'>%s </span>" + 
+		"in<span class='wordLanguage'> %s </span>?<p>"+
+		"<input type='text' name='answer'>"+
+		"<button type='submit' name='%s'>%s</button>"+
+		"</form>",mode, currentIndex, currentWord, data.SelectedLanguage, buttonName, buttonType)
+
+
+		return questionString
+}

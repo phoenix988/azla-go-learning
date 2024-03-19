@@ -1,3 +1,5 @@
-module base_webapp
+module azla_go_learning
 
 go 1.22.1
+
+require github.com/lib/pq v1.10.9 // indirect

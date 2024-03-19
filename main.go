@@ -7,6 +7,34 @@ import (
 	"strings"
 )
 
+func evaluateAnswers(userAnswer string, currentCorrect string, w http.ResponseWriter) {
+	// Using switch statement to evaluate the answers
+	switch userAnswer {
+	case currentCorrect:
+		htmlStr := fmt.Sprintf("<form hx-post='/next'>"+
+			"<h1 class='app-title'>AZLA</h1><h2 class='word-list'>Your answer is correct %s"+
+			"</h2><button type='submit' name='next'>Next</button>"+
+			"</form>", userAnswer)
+
+		tmpl, _ := template.New("t").Parse(htmlStr)
+		tmpl.Execute(w, nil)
+
+		data.CorrectAnswers += 1
+	default:
+		htmlStr := fmt.Sprintf("<form hx-post='/next'>"+
+			"<h1 class='app-title'>AZLA</h1><h2 class='word-list'>Your answer is Incorrect %s<p>"+
+			"</h2><h2>Correct answer is: <h2 style='color: #ff5555;'>{{.CurrentCorrect}}</h2></h2><button type='submit'" +
+			"name='next'>Next</button>"+
+			"</form>", userAnswer)
+
+		tmpl, _ := template.New("t").Parse(htmlStr)
+		tmpl.Execute(w, data)
+		data.InCorrectAnswers += 1
+	}
+
+}
+
+// Parse index.html
 func mainScreenHandler(w http.ResponseWriter, data PageData) {
 
 	// Parse the HTML template
@@ -36,10 +64,10 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 		data.ExamMode = false
 	}
 
+
 	selectedWordList := r.FormValue("wordListOpt")
 	selectedLanguage := r.FormValue("languageOpt")
 	selectedCount := r.FormValue("wordCountOptions")
-	fmt.Println(selectedCount)
 
 	data.SelectedWordList = selectedWordList
 	data.SelectedLanguage = selectedLanguage
@@ -61,16 +89,29 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Current word
 	currentWord := words[data.CurrentQuestion]
+	currentIndex := data.CurrentQuestion + 1
 	data.Words = words
 	data.Correct = correct
 
-	htmlStr := fmt.Sprintf("<form hx-post='/submit'>"+
-		"<h1 class='app-title'>AZLA</h1><p class='word-list'>What is %s in %s ?<p>"+
-		"<input type='text' name='answer'><button type='submit' name='evaluate'>Submit</button>"+
-		"</form><form><button type='submit'>Back</button></form>", currentWord, selectedLanguage)
+	if data.MaxAmountOfWords >= len(data.Words) {
+		fmt.Println("Wordlist doesnt cointain enough words", len(data.Words))
 
-	tmpl, _ := template.New("t").Parse(htmlStr)
-	tmpl.Execute(w, nil)
+	}
+
+	if data.ExamMode {
+		htmlStr := create_questionString(currentIndex, currentWord, data, "/next")
+
+		tmpl, _ := template.New("t").Parse(htmlStr)
+		tmpl.Execute(w, data)
+
+	} else {
+
+		htmlStr := create_questionString(currentIndex, currentWord, data, "/submit")
+
+		tmpl, _ := template.New("t").Parse(htmlStr)
+		tmpl.Execute(w, nil)
+
+	}
 
 }
 
@@ -80,57 +121,82 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 	userAnswer := strings.ToLower(r.FormValue("answer"))
 
 	// Evaluates users response
-	if userAnswer == currentCorrect {
-		htmlStr := fmt.Sprintf("<form hx-post='/next'>"+
-			"<h1 class='app-title'>AZLA</h1><p class='word-list'>Your answer is correct %s"+
-			"<p><button type='submit' name='next'>Next</button>"+
-			"</form>", userAnswer)
-
-		tmpl, _ := template.New("t").Parse(htmlStr)
-		tmpl.Execute(w, nil)
-
-		data.CorrectAnswers += 1
-	} else {
-		htmlStr := fmt.Sprintf("<form hx-post='/next'>"+
-			"<h1 class='app-title'>AZLA</h1><p class='word-list'>Your answer is InCorrect %s<p>"+
-			"<p>Correct answer is {{.CurrentCorrect}}</p><button type='submit' name='next'>Next</button>"+
-			"</form>", userAnswer)
-
-		tmpl, _ := template.New("t").Parse(htmlStr)
-		tmpl.Execute(w, data)
-		data.InCorrectAnswers += 1
-	}
-
-	data.CurrentQuestion += 1
+	evaluateAnswers(userAnswer, currentCorrect, w)
 
 }
 
 // Next question Handler
 func nextHandler(w http.ResponseWriter, r *http.Request) {
-	if data.CurrentQuestion >= len(data.Words) || data.CurrentQuestion >= data.MaxAmountOfWords {
-		// data.CurrentQuestion = 0 // Reset to the first question if we reach the end
-		// fmt.Println("Last question")
+	// Check if you are on the last question
+	if data.CurrentQuestion >= len(data.Words) || data.CurrentQuestion >= data.MaxAmountOfWords-1 {
+		if data.ExamMode  { // If exam mode is activated
+			currentCorrect := strings.ToLower(data.Correct[data.CurrentQuestion-1])
+			userAnswer := strings.ToLower(r.FormValue("answer"))
+			switch userAnswer {
+			case currentCorrect:
+				data.CorrectAnswers += 1
+				fmt.Println("Correct")
+			default:
+				data.InCorrectAnswers += 1
+				fmt.Println("Incorrect, Correct:", data.CurrentCorrect)
+			}
+		}
+
 		htmlStr := fmt.Sprintf("<form hx-post='/'>" +
 			"<h1 class='app-title'>AZLA</h1><p class='word-list'>You Have Reached The End<p>" +
 			"<p>Number of Incorrect {{.InCorrectAnswers}}<p/><p>Number of Correct {{.CorrectAnswers}}</p>" +
-			"</form>")
+			"<button type='submit'>Back</form>")
 
 		tmpl, _ := template.New("t").Parse(htmlStr)
 		tmpl.Execute(w, data)
 
 	} else {
-		currentWord := data.Words[data.CurrentQuestion]
+		data.CurrentQuestion += 1
+		if data.ExamMode {
 
-		htmlStr := fmt.Sprintf("<form hx-post='/submit'>"+
-			"<h1 class='app-title'>AZLA</h1><p class='word-list'>What is %s in %s ?<p>"+
-			"<input type='text' name='answer'>"+
-			"<button type='submit' name='evaluate'>Submit</button>"+
-			"</form>", currentWord, data.SelectedLanguage)
+			currentCorrect := strings.ToLower(data.Correct[data.CurrentQuestion-1])
+			userAnswer := strings.ToLower(r.FormValue("answer"))
 
-		tmpl, _ := template.New("t").Parse(htmlStr)
-		tmpl.Execute(w, nil)
+			switch userAnswer {
+			case currentCorrect:
+				data.CorrectAnswers += 1
+				fmt.Println("Correct")
+			default:
+				data.InCorrectAnswers += 1
+				fmt.Println("Incorrect, Correct:", currentCorrect)
+			}
+
+			currentWord := data.Words[data.CurrentQuestion]
+			currentIndex := data.CurrentQuestion + 1
+
+			htmlStr := create_questionString(currentIndex, currentWord, data, "/next")
+			
+			tmpl, _ := template.New("t").Parse(htmlStr)
+			tmpl.Execute(w, nil)
+		} else {
+			currentWord := data.Words[data.CurrentQuestion]
+			currentIndex := data.CurrentQuestion + 1
+
+			htmlStr := create_questionString(currentIndex, currentWord, data, "/submit")
+
+			tmpl, _ := template.New("t").Parse(htmlStr)
+			tmpl.Execute(w, nil)
+
+		}
 
 	}
+
+}
+
+func prevHandler(w http.ResponseWriter, r *http.Request) {
+
+
+
+}
+
+
+func wordlistChangeHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("test")
 
 }
 
@@ -166,5 +232,7 @@ func main() {
 	http.HandleFunc("/question", questionHandler)
 	http.HandleFunc("/submit", submitHandler)
 	http.HandleFunc("/next", nextHandler)
+	http.HandleFunc("/prev", prevHandler)
+	http.HandleFunc("/wordlist_changed", wordlistChangeHandler)
 	http.ListenAndServe(":8080", nil)
 }
