@@ -1,0 +1,23 @@
+<div id='resultMenu'><form hx-post='/'> 
+    <img class='image' 
+            src='https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg' 
+            alt='flag-of-azerbajani' 
+            width='300' height='150'>
+    <h1 class='app-title'>Result</h1>
+    <ul>
+        {{ if .CorrectAnswersList }}
+            <li><h2> Correct Answers: {{.CorrectAnswers}} </h2></li>
+        {{ end }}
+        {{ range $correct, $answer := .CorrectAnswersList }}
+            <li class='correct-text'><h3>Correct: {{$correct}} Your Answer: {{$answer}}</h3></li>
+        {{ end }}
+        {{ if .CorrectAnswersList }}
+            <li>------------------</li>
+        {{ end }}
+        <li><h2>Incorrect Answers: {{.InCorrectAnswers}}</h2></li>
+        {{ range $correct, $answer := .InCorrectAnswersList }}
+            <li class='incorrect-text'><h3> Correct: {{$correct}} Your Answer: {{$answer}}</h3></li>
+        {{ end }}
+    </ul>
+    <button type='submit' hx-post='/next' hx-target='#resultMenu'>Hide</button>
+</form></div>

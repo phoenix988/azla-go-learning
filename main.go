@@ -12,6 +12,7 @@ func evaluateAnswers(userAnswer string, currentCorrect string, w http.ResponseWr
 	switch userAnswer {
 	case currentCorrect:
 		htmlStr := fmt.Sprintf("<form hx-post='/next'>"+
+			"<img class='image' src='https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg' alt='alternative-text' width='300' height='150'>" +
 			"<h1 class='app-title'>AZLA</h1><h2 class='word-list'>Your answer is correct %s"+
 			"</h2><button type='submit' name='next'>Next</button>"+
 			"</form>", userAnswer)
@@ -19,17 +20,28 @@ func evaluateAnswers(userAnswer string, currentCorrect string, w http.ResponseWr
 		tmpl, _ := template.New("t").Parse(htmlStr)
 		tmpl.Execute(w, nil)
 
-		data.CorrectAnswers += 1
+		if data.IsComplete[currentCorrect] == false {
+			data.CorrectAnswers += 1
+			data.IsComplete[currentCorrect] = true
+			data.CorrectAnswersList[currentCorrect] = userAnswer
+		}
+
 	default:
 		htmlStr := fmt.Sprintf("<form hx-post='/next'>"+
+			"<img class='image' src='https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg' alt='alternative-text' width='300' height='150'>" +
 			"<h1 class='app-title'>AZLA</h1><h2 class='word-list'>Your answer is Incorrect %s<p>"+
-			"</h2><h2>Correct answer is: <h2 style='color: #ff5555;'>{{.CurrentCorrect}}</h2></h2><button type='submit'" +
+			"</h2><h2>Correct answer is: <h2 style='color: #ff5555;'>{{.CurrentCorrect}}</h2></h2><button type='submit'"+
 			"name='next'>Next</button>"+
 			"</form>", userAnswer)
 
 		tmpl, _ := template.New("t").Parse(htmlStr)
 		tmpl.Execute(w, data)
-		data.InCorrectAnswers += 1
+		
+		if data.IsComplete[currentCorrect] == false {
+			data.InCorrectAnswers += 1
+			data.IsComplete[currentCorrect] = true
+			data.InCorrectAnswersList[currentCorrect] = userAnswer
+		}
 	}
 
 }
@@ -53,6 +65,10 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	data.MaxAmountOfWords = 0
 	data.CorrectAnswers = 0
 	data.InCorrectAnswers = 0
+	data.IsComplete = map[string]bool{}
+	data.CorrectAnswersList = map[string]string{}
+	data.InCorrectAnswersList = map[string]string{}
+	data.AvailableWords = []string{}
 	var words = []string{}
 	var correct = []string{}
 
@@ -60,10 +76,13 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.FormValue("examMode") != "" {
 		data.ExamMode = true
+		data.ExamModeAction = "/next"
+		data.ExamModeString = "Next"
 	} else {
 		data.ExamMode = false
+		data.ExamModeAction = "/submit"
+		data.ExamModeString = "Submit"
 	}
-
 
 	selectedWordList := r.FormValue("wordListOpt")
 	selectedLanguage := r.FormValue("languageOpt")
@@ -94,23 +113,46 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	data.Correct = correct
 
 	if data.MaxAmountOfWords >= len(data.Words) {
-		fmt.Println("Wordlist doesnt cointain enough words", len(data.Words))
-
+		fmt.Println("Wordlist doesn't have enough words:", len(data.Words))
+		fmt.Println("Choosen option:", data.MaxAmountOfWords)
 	}
 
-	if data.ExamMode {
-		htmlStr := create_questionString(currentIndex, currentWord, data, "/next")
+	for i := 0; i < len(data.Words); i++ {
+		if i > data.MaxAmountOfWords { 
+			break
+			} else {
+			fmt.Println("runs")
+			data.AvailableWords = append(data.AvailableWords, data.Words[i])
+		}
+	}
 
-		tmpl, _ := template.New("t").Parse(htmlStr)
+	fmt.Println(data.AvailableWords)
+
+
+	if data.ExamMode {
+
+		data.CurrentWord = currentWord
+		data.CurrentIndex = currentIndex
+		tmpl, _ := create_questionString()
+
+		//tmpl, _ := template.New("t").Parse(htmlStr)
 		tmpl.Execute(w, data)
 
 	} else {
 
-		htmlStr := create_questionString(currentIndex, currentWord, data, "/submit")
+		//htmlStr := create_questionString(currentIndex, currentWord, data, "/submit")
+		tmpl, err := create_questionString()
 
-		tmpl, _ := template.New("t").Parse(htmlStr)
-		tmpl.Execute(w, nil)
+		//tmpl, _ := template.New("t").Parse(htmlStr)
+		data.CurrentWord = currentWord
+		data.CurrentIndex = currentIndex
 
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		tmpl.Execute(w, data)
+		
 	}
 
 }
@@ -129,25 +171,33 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 func nextHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if you are on the last question
 	if data.CurrentQuestion >= len(data.Words) || data.CurrentQuestion >= data.MaxAmountOfWords-1 {
-		if data.ExamMode  { // If exam mode is activated
-			currentCorrect := strings.ToLower(data.Correct[data.CurrentQuestion-1])
+		if data.ExamMode { // If exam mode is activated
+			currentCorrect := strings.ToLower(data.Correct[data.CurrentQuestion])
 			userAnswer := strings.ToLower(r.FormValue("answer"))
 			switch userAnswer {
 			case currentCorrect:
-				data.CorrectAnswers += 1
-				fmt.Println("Correct")
+				if data.IsComplete[currentCorrect] == false {
+					data.CorrectAnswers += 1
+					data.IsComplete[currentCorrect] = true
+					data.CorrectAnswersList[currentCorrect] = userAnswer
+					fmt.Println("Correct")
+				}
 			default:
-				data.InCorrectAnswers += 1
-				fmt.Println("Incorrect, Correct:", data.CurrentCorrect)
+				if data.IsComplete[currentCorrect] == false {
+					data.InCorrectAnswers += 1
+					data.IsComplete[currentCorrect] = true
+					data.InCorrectAnswersList[currentCorrect] = userAnswer
+					fmt.Println("Incorrect, Correct:", data.CurrentCorrect)
+				}
 			}
 		}
 
-		htmlStr := fmt.Sprintf("<form hx-post='/'>" +
-			"<h1 class='app-title'>AZLA</h1><p class='word-list'>You Have Reached The End<p>" +
-			"<p>Number of Incorrect {{.InCorrectAnswers}}<p/><p>Number of Correct {{.CorrectAnswers}}</p>" +
-			"<button type='submit'>Back</form>")
+		fmt.Println("correct: ", data.CorrectAnswers)
+		fmt.Println("incorrect: ", data.InCorrectAnswers)
+		
+		// parse the end menu html file that displays the results
+		tmpl, _ := template.ParseFiles("index/endMenu.html")
 
-		tmpl, _ := template.New("t").Parse(htmlStr)
 		tmpl.Execute(w, data)
 
 	} else {
@@ -159,28 +209,39 @@ func nextHandler(w http.ResponseWriter, r *http.Request) {
 
 			switch userAnswer {
 			case currentCorrect:
-				data.CorrectAnswers += 1
+				if data.IsComplete[currentCorrect] == false {
+					data.CorrectAnswers += 1
+					data.IsComplete[currentCorrect] = true
+					data.CorrectAnswersList[currentCorrect] = userAnswer
+				}
 				fmt.Println("Correct")
 			default:
-				data.InCorrectAnswers += 1
+				if data.IsComplete[currentCorrect] == false {
+					data.InCorrectAnswers += 1
+					data.IsComplete[currentCorrect] = true
+					data.InCorrectAnswersList[currentCorrect] = userAnswer
+				}
 				fmt.Println("Incorrect, Correct:", currentCorrect)
 			}
 
 			currentWord := data.Words[data.CurrentQuestion]
 			currentIndex := data.CurrentQuestion + 1
+			data.CurrentWord = currentWord
+			data.CurrentIndex = currentIndex
 
-			htmlStr := create_questionString(currentIndex, currentWord, data, "/next")
-			
-			tmpl, _ := template.New("t").Parse(htmlStr)
-			tmpl.Execute(w, nil)
+			htmlStr, _ := create_questionString()
+
+			//tmpl, _ := template.New("t").Parse(htmlStr)
+			htmlStr.Execute(w, data)
 		} else {
 			currentWord := data.Words[data.CurrentQuestion]
 			currentIndex := data.CurrentQuestion + 1
+			data.CurrentWord = currentWord
+			data.CurrentIndex = currentIndex
 
-			htmlStr := create_questionString(currentIndex, currentWord, data, "/submit")
+			htmlStr, _ := create_questionString()
 
-			tmpl, _ := template.New("t").Parse(htmlStr)
-			tmpl.Execute(w, nil)
+			htmlStr.Execute(w, data)
 
 		}
 
@@ -190,13 +251,70 @@ func nextHandler(w http.ResponseWriter, r *http.Request) {
 
 func prevHandler(w http.ResponseWriter, r *http.Request) {
 
+	currentWord := data.Words[data.CurrentQuestion-1]
+	currentIndex := data.CurrentQuestion
+	fmt.Println(data.CurrentQuestion)
+	var htmlStr string
+	htmlStr = fmt.Sprintf("<p id='wordQuestion'>" +
+		"<span id='wordQuestion'>%d </span>What is " +
+		"<span id='wordQuestion' class='wordQuestion'>%s" +
+		"</span> in <span class='wordLanguage'> %s</span> ?</p>", currentIndex, currentWord, data.SelectedLanguage)
 
+	tmpl, err := template.New("t").Parse(htmlStr)
+	if err != nil {
+		fmt.Println("Error Occures")
+	}
+	tmpl.Execute(w, nil)
+
+	data.CurrentQuestion -= 1
 
 }
 
-
 func wordlistChangeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("test")
+	selectedWordList := r.FormValue("wordListOpt")
+	htmlStr := fmt.Sprintf("<div id='wordListTitle'>Wordlist <span class='wordQuestion'>%s</span> Selected</div>", selectedWordList)
+
+	tmpl, err := template.New("t").Parse(htmlStr)
+	if err != nil {
+		fmt.Println("Error Occured")
+	}
+	tmpl.Execute(w, nil)
+
+}
+
+func wordResultHandler(w http.ResponseWriter, r *http.Request) {
+
+	for key, value := range data.InCorrectAnswersList {
+		fmt.Println(key, value)
+	}
+
+	tmpl, _ := template.ParseFiles("index/resultMenu.html")
+
+	tmpl.Execute(w, data)
+}
+
+
+func wordcountChangeHandler(w http.ResponseWriter, r *http.Request) {
+	selectedCount := r.FormValue("wordCountOptions")
+	htmlStr := fmt.Sprintf("<div id='wordAmount'><span class='wordQuestion'>%s</span> Words Selected</div>", selectedCount)
+
+	tmpl, err := template.New("t").Parse(htmlStr)
+	if err != nil {
+		fmt.Println("Error Occured")
+	}
+	tmpl.Execute(w, nil)
+
+}
+
+func languageChangeHandler(w http.ResponseWriter, r *http.Request) {
+	selectedLanguage := r.FormValue("languageOpt")
+	htmlStr := fmt.Sprintf("<div id='languageTitle'><span class='wordQuestion'>%s</span> Selected</div>", selectedLanguage)
+
+	tmpl, err := template.New("t").Parse(htmlStr)
+	if err != nil {
+		fmt.Println("Error Occured")
+	}
+	tmpl.Execute(w, nil)
 
 }
 
@@ -226,6 +344,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+
 func main() {
 
 	http.HandleFunc("/", handler)
@@ -234,5 +353,8 @@ func main() {
 	http.HandleFunc("/next", nextHandler)
 	http.HandleFunc("/prev", prevHandler)
 	http.HandleFunc("/wordlist_changed", wordlistChangeHandler)
+	http.HandleFunc("/wordcount_changed", wordcountChangeHandler)
+	http.HandleFunc("/language_changed", languageChangeHandler)
+	http.HandleFunc("/word_result", wordResultHandler)
 	http.ListenAndServe(":8080", nil)
 }

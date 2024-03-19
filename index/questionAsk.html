@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head> </head>
+  <body>
+      <form hx-post="{{.ExamModeAction}}" id="questionForm">
+      <div id="questionWindow">
+        <button
+          class="openbtn"
+          onclick="openNav()"
+          hx-post="/tree"
+          hx-target="#tree"
+        >
+          ≡
+        </button>
+        <div class="word-tree" id="word-tree">
+          <button
+            class="openbtn"
+            hx-post="/tree"
+            hx-target="#tree"
+            onclick="closeNav()"
+          >
+            ≡
+          </button>
+          <h2>Available Words</h2>
+          <ul class='word-list'>
+            {{ range .AvailableWords}}
+            <div>{{.}}</div>
+              {{ end }}
+          </ul>
+        </div>
+        <img
+          class="image"
+          src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg"
+          alt="alternative-text"
+          width="300"
+          height="150"
+        />
+        <h1 class="app-title">AZLA</h1>
+        <p id="wordQuestion">
+          <span> {{.CurrentIndex}} </span> What is
+          <span class="wordQuestion"> {{.CurrentWord}} </span> in
+          <span class="wordLanguage"> {{.SelectedLanguage}} </span> ?
+        </p>
+        <div>
+          <input type="text" placeholder="Input Your Answer" name="answer" />
+        </div>
+        <button
+          type="submit"
+          name="prev"
+          class="prevButton"
+          hx-post="/prev"
+          hx-target="#wordQuestion"
+        >
+          Previous
+        </button>
+        <button type="submit" name="questionButton" onclick="hidePanel()">
+          {{.ExamModeString}}
+        </button>
+        <div>
+          <button type="submit" hx-post="/" hx-target="#questionWindow">
+            Back
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

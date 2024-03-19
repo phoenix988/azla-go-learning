@@ -3,7 +3,9 @@ package main
 // Static variables I set here
 // Plus the main pagedata I want to pass to the template
 
-import "fmt"
+import (
+	"html/template"
+)
 
 // Language options
 var languageOptions []string = []string{"Azerbajani", "English"}
@@ -17,42 +19,30 @@ type PageData struct {
 	SelectedWordList        string   // Selected wordlist option
 	SelectedLanguage        string   // Selected Language Option
 	Words                   []string // For all words
+	AvailableWords          []string // For all availble words 
 	Correct                 []string // For all correct answers
 	CurrentCorrect          string   // For the current correct answer
 	CurrentWord             string   // For the current correct answer
 	LanguageOptions         []string // Language Options
 	CurrentQuestion         int      // Current question index
+	CurrentIndex            int      // Current question index
 	CorrectAnswers          int      // Number of correct answer
 	InCorrectAnswers        int      // Number of incorrcet answers
 	MaxAmountOfWords        int      // Max amount fo questions to ask
 	MaxAmountOfWordsOptions []int    // Max amount fo questions to ask
 	ExamMode                bool
+	ExamModeAction          string
+	ExamModeString          string
+	IsComplete              map[string]bool
+	CorrectAnswersList      map[string]string
+	InCorrectAnswersList    map[string]string
 }
 
 // Create table for the data to pass to the template
 var data = PageData{}
 
-func create_questionString(currentIndex int, currentWord string, data PageData, mode string)string {
-	var buttonType string
-	var buttonName string
-	
-	switch mode {
-	case "/submit":
-		buttonType = "Submit"
-		buttonName = "evaluate"
-		
-	case "/next":
-		buttonType = "Next"
-		buttonName = "next"
+func create_questionString() (*template.Template, error) {
+	tmpl, err := template.ParseFiles("index/questionAsk.html")
 
-	}
-	var questionString = fmt.Sprintf("<form hx-post='%s'>"+
-		"<h1 class='app-title'>AZLA</h1><p class='word-list'>%d What is <span class='wordQuestion'>%s </span>" + 
-		"in<span class='wordLanguage'> %s </span>?<p>"+
-		"<input type='text' name='answer'>"+
-		"<button type='submit' name='%s'>%s</button>"+
-		"</form>",mode, currentIndex, currentWord, data.SelectedLanguage, buttonName, buttonType)
-
-
-		return questionString
+	return tmpl, err
 }

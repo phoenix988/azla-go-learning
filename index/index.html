@@ -7,7 +7,8 @@
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 <style>
     body {background-color: #161821;}
-    .app-title {color: #f8f8f2}
+    .app-title {color: #f8f8f2;
+                margin-top: 50px;}
     p {color: #f8f8f2;
        font-family: Arial, sans-serif; /* Choose a suitable font */
        font-size: 16px; /* Adjust the font size */
@@ -15,6 +16,10 @@
     }
     h2 {color: #f8f8f2;}
     label {color: #f8f8f2}
+    div {color: #f8f8f2;
+       font-family: Arial, sans-serif; /* Choose a suitable font */
+       font-size: 16px; /* Adjust the font size */
+       line-height: 1.5;}
     
     button {
         background-color: #84a0c6; /* Blue background color */
@@ -30,6 +35,7 @@
 
     .wordQuestion {color: #84a0c6;}
     .wordLanguage {color: #b48ead;}
+    .startButton {width: 30%;}
 
     button:hover {
         background-color: #0056b3; /* Darker blue background color on hover */
@@ -96,16 +102,6 @@
         box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Box shadow on focus */
     }
 
-    .input-group {
-        display: flex; /* Use flexbox to align items */
-        flex-direction: row; /* Align items horizontally */
-        gap: 10px; /* Add some space between the select boxes */
-    }
-    
-    .select-box {
-        flex: 1; /* Make each select box fill available space */
-    }
-
     input[type="checkbox"] {
         appearance: none;
         -webkit-appearance: none;
@@ -153,51 +149,179 @@
         left: 0; /* Position at the left side of the viewport */
         width: 250px; /* Width of the side panel */
         height: 100%; /* Full height of the viewport */
-        background-color: #333; /* Background color of the side panel */
+        background-color: #2D3D50; /* Background color of the side panel */
         color: #fff; /* Text color */
         padding: 20px; /* Padding inside the side panel */
         transition: transform 0.3s ease; /* Add transition for smooth animation */
         transform: translateX(-250px);
     }
+
+    .word-tree {
+        position: fixed; /* Fixed position so it stays in place when scrolling */
+        top: 0; /* Position at the top of the viewport */
+        left: 0; /* Position at the left side of the viewport */
+        width: 250px; /* Width of the side panel */
+        height: 100%; /* Full height of the viewport */
+        background-color: #2D3D50; /* Background color of the side panel */
+        color: #fff; /* Text color */
+        padding: 20px; /* Padding inside the side panel */
+        transition: transform 0.3s ease; /* Add transition for smooth animation */
+        transform: translateX(-250px);
+    }
+
+
+    /* Change color on hover */
+    .side-panel a:hover {
+        color: #f1f1f1;
+    }
+
+    /* Style the close button */
+    .openbtn {
+        position: absolute;
+        top: 0;
+        left: 0;
+        font-size: 36px;
+        margin-left: 50px;
+        margin-bottom: 50px;
+        background-color: #2D3D50;
+        border-radius: 50px; /* Rounded corners */
+    }
+
+    .openbtn:hover {
+        background-color: #444B71; /* Darker blue background color on hover */
+    }
+
+    .input-group {
+        display: flex; /* Use flexbox to align items */
+        flex-direction: row; /* Align items horizontally */
+        gap: 10px; /* Add some space between the select boxes */
+    }
+    
+    .select-box {
+        flex: 1; /* Make each select box fill available space */
+    }
+
+    .text-main {margin-top: 50px; }
+    .image {margin-top: 50px; }
+    .correct-text {color: #b4be82; }
+    .incorrect-text {color: #e27878; }
+    .side-list {margin-top: 70px;}
+
+    /* Adjust the side panel button position for smaller screens */
+    @media screen and (max-width: 600px) {
+      .openbtn {
+        position: absolute;
+        top: 20px; /* Adjust the top margin to create space for the title */
+        left: 0px; /* Adjust the left margin */
+        font-size: 24px; /* Reduce the font size */
+      }
+
+      .title-container {
+        padding-left: 30px; /* Add left padding to create space for the button */
+        padding-top: 20px;
+      }
+      .image {
+        width: 150px;
+        height: 75px;
+      }
+      input[type="text"] {
+        padding: 10px; /* Padding around the text */
+        border: 1px solid #ccc; /* Border color */
+        border-radius: 5px; /* Rounded corners */
+        font-size: 16px; /* Font size */
+        width: 50%; /* Width of the input box */
+        box-sizing: border-box; /* Include padding and border in width calculation */
+        }
+      
+    select {
+        padding: 10px; /* Padding around the text */
+        border: 1px solid #ccc; /* Border color */
+        border-radius: 20px; /* Rounded corners */
+        font-size: 16px; /* Font size */
+        width: 60%; /* Width of the select box */
+        box-sizing: border-box; /* Include padding and border in width calculation */
+        background-color: #fff; /* Background color */
+        appearance: none; /* Remove default styles (may not work on all browsers) */
+        cursor: pointer; /* Show pointer cursor */
+        margin: 10px 0;
+        }
+
+    .startButton { width: 60%; }
+    }
+
+    .word-list { margin-top: 50px;
+                margin-right: 100px;
+                padding: 10px; /* Padding around the text */
+                border: 1px solid #ccc; /* Border color */
+                border-radius: 20px; /* Rounded corners */
+                font-size: 16px; /* Font size */
+                width: 60%; /* Width of the select box */
+                background-color: #161821; /* Background color */
+                cursor: pointer; /* Show pointer cursor */
+                margin: 10px 0;
+    }
+    
+ 
 </style>
 </head>
 <body>
-    <div class="side-panel">
-        <!-- Content for the side panel -->
-        <ul>
-            <li><a href="#">Link 1</a></li>
-            <li><a href="#">Link 2</a></li>
-            <li><a href="#">Link 3</a></li>
-            <!-- Add more links or content here -->
-        </ul>
-    </div>
+    <div id="output"></div>
+    <script>
+        function openNav() {
+            var panel = document.getElementById("word-tree");
+            panel.style.transform = "translateX(0)";
+            panel.style.width = '500px'
+        }
+        
+        function closeNav() {
+            var panel = document.getElementById("word-tree");
+            panel.style.transform = "translateX(-250px)";
+            
+            panel.style.width = '250px'
+        }
+
+    </script>
     <center>
     <form hx-post="/question">
-    <h1 class="app-title" id="app-title"><center>Azla Language Learning<center></h1>
-       <center><p id="text-main">Select A wordlist and language</p></center>
-        <div class='entry-boxes'><select name="languageOpt" id="languageOpt">
-            {{range .LanguageOptions}}
-                <option value={{.}}>{{.}}</option>
-            {{end}}
-        </select></div>
-        <div><select name="wordListOpt" class="entry-box" hx-post="/wordlist_changed">
-            {{range .WordListOptions}}
-                <option value="{{.}}">{{.}}</option>
-            {{end}}
-        </select></div>
-        <div><select name="wordCountOptions" class="entry-box">
-            {{range .MaxAmountOfWordsOptions}}
-                <option value="{{.}}">{{.}}</option>
-            {{end}}
-        </select></div>
-        <button type="submit" name="Start">Start</button>
+        <div class="title-container">
+            <h1 class="app-title" id="app-title"><center>Azla Language Learning<center></h1>
+        </div>
+        <img class="image" src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg" alt="alternative-text" width="300" height="150">
+        <p id="text-main" class='text-main'>Select Your Options</p>
+        <div id='languageTitle'></div>
+        <div class='entry-boxes'>
+            <select name="languageOpt" id="languageOpt"
+                    hx-target='#languageTitle' hx-post='/language_changed'>
+                {{range .LanguageOptions}}
+                    <option value={{.}}>{{.}}</option>
+                {{end}}
+            </select>
+        </div>
+        <div id='wordListTitle'></div>
+        <div>
+            <select id='wordListOptions' 
+                    name="wordListOpt" 
+                    class="entry-box" 
+                    hx-target='#wordListTitle' hx-post="/wordlist_changed">
+                {{range .WordListOptions}}
+                    <option value="{{.}}">{{.}}</option>
+                {{end}}
+            </select>
+        </div>
+        <div id='wordAmount'></div>
+        <div>
+            <select name="wordCountOptions" class="entry-box"
+                    hx-target='#wordAmount' hx-post='/wordcount_changed'>
+                {{range .MaxAmountOfWordsOptions}}
+                    <option value="{{.}}">{{.}}</option>
+                {{end}}
+            </select>
+        </div>
+        <button type="submit" name="Start" class='startButton'>Start</button>
         <div>
             <label for="examCheck">Exam Mode</label>
             <input type="checkbox" id="examCheck" name="examMode" value="Exam Mode">
         </div>
-        {{block "word-list" .}}
-            <p class="word-list"></p>
-        {{end}}
     </form></center>
 </body>
 </html>
