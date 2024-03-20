@@ -69,7 +69,8 @@
         font-size: 16px; /* Font size */
         width: 30%; /* Width of the select box */
         box-sizing: border-box; /* Include padding and border in width calculation */
-        background-color: #fff; /* Background color */
+        background-color: #161821; /* Background color */
+        color: #f8f8f2;
         appearance: none; /* Remove default styles (may not work on all browsers) */
         cursor: pointer; /* Show pointer cursor */
         margin: 10px 0;
@@ -99,7 +100,7 @@
     select:focus {
         outline: none; /* Remove default focus outline */
         border-color: #a093c7; /* Border color on focus */
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Box shadow on focus */
+        box-shadow: 0 0 5px rgba(120, 123, 255, 0.5); /* Box shadow on focus */
     }
 
     input[type="checkbox"] {
@@ -240,7 +241,6 @@
         font-size: 16px; /* Font size */
         width: 60%; /* Width of the select box */
         box-sizing: border-box; /* Include padding and border in width calculation */
-        background-color: #fff; /* Background color */
         appearance: none; /* Remove default styles (may not work on all browsers) */
         cursor: pointer; /* Show pointer cursor */
         margin: 10px 0;
@@ -260,8 +260,6 @@
                 cursor: pointer; /* Show pointer cursor */
                 margin: 10px 0;
     }
-    
- 
 </style>
 </head>
 <body>
@@ -319,7 +317,7 @@
         </div>
         <button type="submit" name="Start" class='startButton'>Start</button>
         <div>
-            <label for="examCheck">Exam Mode</label>
+            <label for="examCheck" class='check'>Exam Mode</label>
             <input type="checkbox" id="examCheck" name="examMode" value="Exam Mode">
         </div>
     </form></center>
