@@ -1,0 +1,75 @@
+<body>
+<script>
+    // Function to hide the message after a certain amount of time
+    function hideMessageAfterTimeout() {
+        setTimeout(function() {
+            var message = document.getElementById('addedMessage');
+            if (message) {
+                message.style.display = 'none'; // Hide the message
+            }
+        }, 5000); // 5000 milliseconds = 5 seconds
+    }
+
+    function hideWindowAfterTimeout() {
+        setTimeout(function() {
+            var message = document.getElementById('floatingWindow');
+            if (message) {
+                message.style.display = 'none'; // Hide the message
+            }
+        }, 5000); // 5000 milliseconds = 5 seconds
+    }
+</script>
+
+<div id='addWordMenu'>
+ <form hx-post='/'> 
+     <img class='image' 
+             src='https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg' 
+             alt='flag-of-azerbajani' 
+             width='300' height='150'>
+     <h1 class='Add-new-Word'>AZLA</h1>
+     {{ if not .IsWordlist }}
+       <div>
+          <input id='addWordList' 
+                 type="text" 
+                 placeholder="Name of wordlist"
+                 name="addWordList" />
+          <div>
+            <button class='backButton'  
+                    type='submit' 
+                    hx-post='/add_word_save' 
+                    hx-target='#addWordMenu'>Add Wordlist</button>
+          <div>
+       </div>
+       <div><button type='submit' class='backButton'>Back</button><div>
+     {{ end }}
+ </form>
+</div>
+<form hx-post='/' hx-target='#addWordMenu'>
+{{ if .IsWordlist }}
+    <div class='floatingWindowSuc' id='floatingWindow'>
+       <p class='message' id="addedMessage">Added Wordlist please enter the words</p>
+    </div>
+    <span>
+       <input type="text" placeholder="English Word" name="addWordList" />
+       <input type="text" placeholder="Aze Word" name="addWordList" />
+    </span>
+    <div><button type='submit' class='backButton'>Back</button><div>
+     <script>
+        // Call the function to hide the message after 5 seconds
+        hideMessageAfterTimeout();
+        hideWindowAfterTimeout();
+    </script>
+{{ end }}
+
+{{ if .IsWordlistEmpty }}
+    <div class='floatingWindow' id='floatingWindow'>
+        <p class='errorMessage' id="addedMessage">Value can't be empty</p>
+    </div>
+     <script>
+        // Call the function to hide the message after 5 seconds
+        hideMessageAfterTimeout();
+        hideWindowAfterTimeout();
+    </script>
+{{ end }}
+</form>
+</body>

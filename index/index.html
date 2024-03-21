@@ -14,6 +14,7 @@
        font-size: 16px; /* Adjust the font size */
        line-height: 1.5;
     }
+    
     h2 {color: #f8f8f2;}
     label {color: #f8f8f2}
     div {color: #f8f8f2;
@@ -33,10 +34,6 @@
         margin-top: 10px;
     }
 
-    .wordQuestion {color: #84a0c6;}
-    .wordLanguage {color: #b48ead;}
-    .startButton {width: 30%;}
-
     button:hover {
         background-color: #0056b3; /* Darker blue background color on hover */
     }
@@ -50,7 +47,16 @@
         border: 1px solid #ccc; /* Border color */
         border-radius: 5px; /* Rounded corners */
         font-size: 16px; /* Font size */
-        width: 20%; /* Width of the input box */
+        width: 40%; /* Width of the input box */
+        box-sizing: border-box; /* Include padding and border in width calculation */
+    }
+
+    input[type="password"] {
+        padding: 10px; /* Padding around the text */
+        border: 1px solid #ccc; /* Border color */
+        border-radius: 5px; /* Rounded corners */
+        font-size: 16px; /* Font size */
+        width: 40%; /* Width of the input box */
         box-sizing: border-box; /* Include padding and border in width calculation */
     }
     
@@ -59,8 +65,6 @@
         border-color: #a093c7; /* Border color on focus */
         box-shadow: 0 0 5px rgba(100, 65, 120, 0.5); /* Box shadow on focus */
     }
-
-
 
     select {
         padding: 10px; /* Padding around the text */
@@ -143,19 +147,54 @@
         text-decoration: underline; /* Underline the label text when hovered */
     }
 
+    .wordQuestion {color: #84a0c6;}
+    .wordLanguage {color: #b48ead;}
+    .startButton {width: 30%;}
+    .settingButton {width: 80%;}
+    .backButton {width: 40%;}
+    .moveButtons {width: 20%;}
 
-    .side-panel {
-        position: fixed; /* Fixed position so it stays in place when scrolling */
-        top: 0; /* Position at the top of the viewport */
-        left: 0; /* Position at the left side of the viewport */
-        width: 250px; /* Width of the side panel */
-        height: 100%; /* Full height of the viewport */
-        background-color: #2D3D50; /* Background color of the side panel */
-        color: #fff; /* Text color */
-        padding: 20px; /* Padding inside the side panel */
-        transition: transform 0.3s ease; /* Add transition for smooth animation */
-        transform: translateX(-250px);
+    .questionString {font-size: 25px;}
+
+     .errorMessage {
+         color: red;
+         font-size: 14px;
+         margin-top: 5px;
+     }
+     
+     .message {
+         color: green;
+         font-size: 14px;
+         margin-top: 5px;
+     }
+
+    /* CSS for floating window container */
+    .floatingWindow {
+        position: fixed;
+        top: 25%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f8d7da;
+        border: 1px solid #dc3545;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
     }
+
+    .floatingWindowSuc {
+        position: fixed;
+        top: 25%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f8d7da;
+        border: 1px solid #c0ca8e;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
 
     .word-tree {
         position: fixed; /* Fixed position so it stays in place when scrolling */
@@ -170,12 +209,6 @@
         transform: translateX(-250px);
     }
 
-
-    /* Change color on hover */
-    .side-panel a:hover {
-        color: #f1f1f1;
-    }
-
     /* Style the close button */
     .openbtn {
         position: absolute;
@@ -185,6 +218,7 @@
         margin-left: 50px;
         margin-bottom: 50px;
         background-color: #2D3D50;
+
         border-radius: 50px; /* Rounded corners */
     }
 
@@ -208,14 +242,56 @@
     .incorrect-text {color: #e27878; }
     .side-list {margin-top: 70px;}
 
+
+    .word-list { margin-top: 50px;
+                margin-right: 100px;
+                padding: 10px; /* Padding around the text */
+                border: 1px solid #ccc; /* Border color */
+                border-radius: 20px; /* Rounded corners */
+                font-size: 25px; /* Font size */
+                width: 60%; /* Width of the select box */
+                background-color: #161821; /* Background color */
+                cursor: pointer; /* Show pointer cursor */
+                margin: 10px 0;
+                transition: transform 0.7s ease; /* Add transition for smooth animation */
+            }
+
+    .buttonList { 
+        position: fixed; /* Fixed position so it stays in place when scrolling */
+        top: 70%; /* Position at the top of the viewport */
+        left: 40%; /* Position at the left side of the viewport */
+        width: 20%; /* Width of the side panel */
+        height: 100%; /* Full height of the viewport */
+        background-color: #161821; /* Background color of the side panel */
+        border-radius: 20px; /* Rounded corners */
+        color: #fff; /* Text color */
+        padding: 20px; /* Padding inside the side panel */
+        transition: transform 0.3s ease; /* Add transition for smooth animation */
+        }
+
+    .input-box {
+        width: 300px; /* Adjust width as needed */
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        color: #333;
+        outline: none;
+        transition: border-color 0.3s ease;
+}
+
     /* Adjust the side panel button position for smaller screens */
     @media screen and (max-width: 600px) {
       .openbtn {
         position: absolute;
         top: 20px; /* Adjust the top margin to create space for the title */
-        left: 0px; /* Adjust the left margin */
+        left: -20px; /* Adjust the left margin */
         font-size: 24px; /* Reduce the font size */
       }
+
+      .questionString {font-size: 20px;}
+      .app-title {color: #f8f8f2;
+                  margin-top: 0px;}
 
       .title-container {
         padding-left: 30px; /* Add left padding to create space for the button */
@@ -230,57 +306,69 @@
         border: 1px solid #ccc; /* Border color */
         border-radius: 5px; /* Rounded corners */
         font-size: 16px; /* Font size */
-        width: 50%; /* Width of the input box */
+        width: 60%; /* Width of the input box */
         box-sizing: border-box; /* Include padding and border in width calculation */
         }
       
-    select {
+      input[type="password"] {
         padding: 10px; /* Padding around the text */
         border: 1px solid #ccc; /* Border color */
-        border-radius: 20px; /* Rounded corners */
+        border-radius: 5px; /* Rounded corners */
         font-size: 16px; /* Font size */
-        width: 60%; /* Width of the select box */
+        width: 60%; /* Width of the input box */
         box-sizing: border-box; /* Include padding and border in width calculation */
-        appearance: none; /* Remove default styles (may not work on all browsers) */
-        cursor: pointer; /* Show pointer cursor */
-        margin: 10px 0;
         }
+      
+      select {
+          padding: 10px; /* Padding around the text */
+          border: 1px solid #ccc; /* Border color */
+          border-radius: 20px; /* Rounded corners */
+          font-size: 16px; /* Font size */
+          width: 60%; /* Width of the select box */
+          box-sizing: border-box; /* Include padding and border in width calculation */
+          appearance: none; /* Remove default styles (may not work on all browsers) */
+          cursor: pointer; /* Show pointer cursor */
+          margin: 10px 0;
+          }
 
-    .startButton { width: 60%; }
+      .startButton { width: 60%; }
+      .backButton {width: 60%;}
+      .moveButtons {width: 29%;}
     }
 
-    .word-list { margin-top: 50px;
-                margin-right: 100px;
-                padding: 10px; /* Padding around the text */
-                border: 1px solid #ccc; /* Border color */
-                border-radius: 20px; /* Rounded corners */
-                font-size: 16px; /* Font size */
-                width: 60%; /* Width of the select box */
-                background-color: #161821; /* Background color */
-                cursor: pointer; /* Show pointer cursor */
-                margin: 10px 0;
-    }
+
 </style>
 </head>
 <body>
     <div id="output"></div>
     <script>
         function openNav() {
-            var panel = document.getElementById("word-tree");
+            var panel = document.getElementById('word-tree');
             panel.style.transform = "translateX(0)";
-            panel.style.width = '500px'
+            
+            if (window.innerWidth <= 600) { // Adjust this threshold as needed
+                panel.style.width = '340px';
+            } else {
+                panel.style.width = '500px';
+            }
         }
         
         function closeNav() {
-            var panel = document.getElementById("word-tree");
+            var panel = document.getElementById('word-tree');
             panel.style.transform = "translateX(-250px)";
-            
-            panel.style.width = '250px'
+
+            // Check if the screen width is less than or equal to a certain threshold (e.g., for phones)
+            if (window.innerWidth <= 600) { // Adjust this threshold as needed
+                panel.style.width = '0';
+            } else {
+                panel.style.width = '250px';
+            }
         }
 
     </script>
     <center>
-    <form hx-post="/question">
+    <form hx-post="/question" id='MainMenu'>
+        {{ if .IsSignedIn }} 
         <div class="title-container">
             <h1 class="app-title" id="app-title"><center>Azla Language Learning<center></h1>
         </div>
@@ -315,12 +403,39 @@
                 {{end}}
             </select>
         </div>
-        <button type="submit" name="Start" class='startButton'>Start</button>
+        <button type="submit" name="Start" id='startButton' class='startButton'>Start</button>
         <div>
             <label for="examCheck" class='check'>Exam Mode</label>
             <input type="checkbox" id="examCheck" name="examMode" value="Exam Mode">
         </div>
-    </form></center>
+        <div><button style="margin-top: 60px;"type="submit" name="Add-Words" id='startButton' class='startButton' hx-post='/add_word' hx-target='#MainMenu'>Add Words</button></div>
+        <div><button style="margin-top: 60px;"type="submit" name="logout" id='startButton' class='startButton' hx-post='/logout' hx-target='#MainMenu'>Logout</button></div>
+    </form>
+    </center>
+    {{ else }} 
+      <div id='loginMenu'>
+      <div class="title-container">
+          <h1 class="app-title" id="app-title"><center>Azla Language Learning<center></h1>
+      </div>
+      <img class="image" src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg" alt="alternative-text" width="300" height="150">
+      <p>You are not Signed In</p>
+      <div class='word-list'>
+          {{ if .CreateUser }}
+            <p>Create User Account<p>
+          {{ else }}
+            <p>Login to Azla<p>
+          {{ end }}
+          <div><input class='input-box' type="text" placeholder="Username" name="username" /></div>
+          <div><input class='input-box' type="password" placeholder="Password" name="password" /></div>
+          {{ if .CreateUser }}
+            <button class='Sign In' type='submit' hx-post='/create_user_submit' hx-target='#loginMenu' hx-target='MainMenu'>Create Account</button>
+          {{ else }}
+            <button class='Sign In' type='submit' hx-post='/create_user' hx-target='#loginMenu' hx-target='MainMenu'>Create Account</button>
+            <button class='Sign In' type='submit' hx-post='/auth' hx-target='#loginMenu' hx-target='MainMenu'>Sign In</button>
+          {{ end }}
+      </div>
+      </div>
+    {{ end }}
 </body>
 </html>
 

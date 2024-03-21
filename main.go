@@ -5,46 +5,14 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
+	"time"
+	"math/rand"
+	"azla_go_learning/internal/words"
+	"azla_go_learning/internal/json"
+	"azla_go_learning/internal/userAuth"
 )
 
-func evaluateAnswers(userAnswer string, currentCorrect string, w http.ResponseWriter) {
-	// Using switch statement to evaluate the answers
-	switch userAnswer {
-	case currentCorrect:
-		htmlStr := fmt.Sprintf("<form hx-post='/next'>"+
-			"<img class='image' src='https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg' alt='alternative-text' width='300' height='150'>" +
-			"<h1 class='app-title'>AZLA</h1><h2 class='word-list'>Your answer is correct %s"+
-			"</h2><button type='submit' name='next'>Next</button>"+
-			"</form>", userAnswer)
 
-		tmpl, _ := template.New("t").Parse(htmlStr)
-		tmpl.Execute(w, nil)
-
-		if data.IsComplete[currentCorrect] == false {
-			data.CorrectAnswers += 1
-			data.IsComplete[currentCorrect] = true
-			data.CorrectAnswersList[currentCorrect] = userAnswer
-		}
-
-	default:
-		htmlStr := fmt.Sprintf("<form hx-post='/next'>"+
-			"<img class='image' src='https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg' alt='alternative-text' width='300' height='150'>" +
-			"<h1 class='app-title'>AZLA</h1><h2 class='word-list'>Your answer is Incorrect %s<p>"+
-			"</h2><h2>Correct answer is: <h2 style='color: #ff5555;'>{{.CurrentCorrect}}</h2></h2><button type='submit'"+
-			"name='next'>Next</button>"+
-			"</form>", userAnswer)
-
-		tmpl, _ := template.New("t").Parse(htmlStr)
-		tmpl.Execute(w, data)
-		
-		if data.IsComplete[currentCorrect] == false {
-			data.InCorrectAnswers += 1
-			data.IsComplete[currentCorrect] = true
-			data.InCorrectAnswersList[currentCorrect] = userAnswer
-		}
-	}
-
-}
 
 // Parse index.html
 func mainScreenHandler(w http.ResponseWriter, data PageData) {
@@ -72,8 +40,6 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	var words = []string{}
 	var correct = []string{}
 
-	var wordlist = create_wordlist()
-
 	if r.FormValue("examMode") != "" {
 		data.ExamMode = true
 		data.ExamModeAction = "/next"
@@ -95,7 +61,7 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	data.MaxAmountOfWords = convertToNum(selectedCount)
 
 	// Create the word and correct slices/arrays
-	for key, value := range wordlist[selectedWordList] {
+	for key, value := range data.WordList[selectedWordList] {
 		switch data.SelectedLanguage {
 		case "Azerbajani":
 			words = append(words, key)
@@ -118,30 +84,28 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for i := 0; i < len(data.Words); i++ {
-		if i > data.MaxAmountOfWords { 
+		if i > data.MaxAmountOfWords {
 			break
-			} else {
-			fmt.Println("runs")
+		} else {
 			data.AvailableWords = append(data.AvailableWords, data.Words[i])
 		}
 	}
 
 	fmt.Println(data.AvailableWords)
 
-
 	if data.ExamMode {
 
 		data.CurrentWord = currentWord
 		data.CurrentIndex = currentIndex
-		tmpl, _ := create_questionString()
+		tmpl, _ := CreateQuestionTemp()
 
 		//tmpl, _ := template.New("t").Parse(htmlStr)
 		tmpl.Execute(w, data)
 
 	} else {
 
-		//htmlStr := create_questionString(currentIndex, currentWord, data, "/submit")
-		tmpl, err := create_questionString()
+		//htmlStr := CreateQuestionTemp(currentIndex, currentWord, data, "/submit")
+		tmpl, err := CreateQuestionTemp()
 
 		//tmpl, _ := template.New("t").Parse(htmlStr)
 		data.CurrentWord = currentWord
@@ -152,7 +116,7 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		tmpl.Execute(w, data)
-		
+
 	}
 
 }
@@ -186,7 +150,7 @@ func nextHandler(w http.ResponseWriter, r *http.Request) {
 				if data.IsComplete[currentCorrect] == false {
 					data.InCorrectAnswers += 1
 					data.IsComplete[currentCorrect] = true
-					data.InCorrectAnswersList[currentCorrect] = userAnswer
+					data.InCorrectAnswersList[currentCorrect + " Word: " + data.CurrentWord] = userAnswer
 					fmt.Println("Incorrect, Correct:", data.CurrentCorrect)
 				}
 			}
@@ -194,7 +158,7 @@ func nextHandler(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println("correct: ", data.CorrectAnswers)
 		fmt.Println("incorrect: ", data.InCorrectAnswers)
-		
+
 		// parse the end menu html file that displays the results
 		tmpl, _ := template.ParseFiles("index/endMenu.html")
 
@@ -219,7 +183,7 @@ func nextHandler(w http.ResponseWriter, r *http.Request) {
 				if data.IsComplete[currentCorrect] == false {
 					data.InCorrectAnswers += 1
 					data.IsComplete[currentCorrect] = true
-					data.InCorrectAnswersList[currentCorrect] = userAnswer
+					data.InCorrectAnswersList[currentCorrect + " Word: " + data.CurrentWord] = userAnswer
 				}
 				fmt.Println("Incorrect, Correct:", currentCorrect)
 			}
@@ -229,7 +193,7 @@ func nextHandler(w http.ResponseWriter, r *http.Request) {
 			data.CurrentWord = currentWord
 			data.CurrentIndex = currentIndex
 
-			htmlStr, _ := create_questionString()
+			htmlStr, _ := CreateQuestionTemp()
 
 			//tmpl, _ := template.New("t").Parse(htmlStr)
 			htmlStr.Execute(w, data)
@@ -239,7 +203,7 @@ func nextHandler(w http.ResponseWriter, r *http.Request) {
 			data.CurrentWord = currentWord
 			data.CurrentIndex = currentIndex
 
-			htmlStr, _ := create_questionString()
+			htmlStr, _ := CreateQuestionTemp()
 
 			htmlStr.Execute(w, data)
 
@@ -255,9 +219,9 @@ func prevHandler(w http.ResponseWriter, r *http.Request) {
 	currentIndex := data.CurrentQuestion
 	fmt.Println(data.CurrentQuestion)
 	var htmlStr string
-	htmlStr = fmt.Sprintf("<p id='wordQuestion'>" +
-		"<span id='wordQuestion'>%d </span>What is " +
-		"<span id='wordQuestion' class='wordQuestion'>%s" +
+	htmlStr = fmt.Sprintf("<p class='questionString' id='wordQuestion'>"+
+		"<span id='wordQuestion'>%d </span>What is "+
+		"<span id='wordQuestion' class='wordQuestion'>%s"+
 		"</span> in <span class='wordLanguage'> %s</span> ?</p>", currentIndex, currentWord, data.SelectedLanguage)
 
 	tmpl, err := template.New("t").Parse(htmlStr)
@@ -293,7 +257,6 @@ func wordResultHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, data)
 }
 
-
 func wordcountChangeHandler(w http.ResponseWriter, r *http.Request) {
 	selectedCount := r.FormValue("wordCountOptions")
 	htmlStr := fmt.Sprintf("<div id='wordAmount'><span class='wordQuestion'>%s</span> Words Selected</div>", selectedCount)
@@ -320,12 +283,29 @@ func languageChangeHandler(w http.ResponseWriter, r *http.Request) {
 
 // Main Handler
 func handler(w http.ResponseWriter, r *http.Request) {
+
 	// Create wordlist
-	var wordlist = create_wordlist()
+	var wordlist = words.CreateWordlist()
+	// Read the json data file and append new words if they exist
+	importWordsFromJson, _ := jsonMod.ReadWordJson(jsonPath)
+
+
+	for key, value := range importWordsFromJson.Wordlist {
+		wordlist[key] = value
+	}
+
+	for key, value := range importWordsFromJson.Wordlist {
+	    if _, ok := wordlist[key]; !ok {
+	        wordlist[key] = value
+	    }
+	}
+
 	var wordListOptions = []string{}
 
+	data.WordList = wordlist
+
 	// Define the Wordlist options and append them to the wordListOptions slice
-	for key := range wordlist {
+	for key := range data.WordList {
 		wordListOptions = append(wordListOptions, key)
 
 		//for i := 0; i < len(wordlist[key]); i++ {
@@ -340,14 +320,136 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		MaxAmountOfWordsOptions: amountOfWords,
 	}
 
-	mainScreenHandler(w, data)
+	session, _ := store.Get(r, "session-name")
+	
+	// Check if user is authenticated
+	userID, ok := session.Values["user_id"].(int)
+	if !ok || userID == 0 {
+		// User is not authenticated, redirect to login page
+		data.IsSignedIn = false
+		mainScreenHandler(w, data)
+		return
+	} else {
+		data.IsSignedIn = true
+		mainScreenHandler(w, data)
+		fmt.Println("User is authenticated")
 
+	}
+
+}
+
+// Launch the login screen
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	data.CreateUser = false
+
+	//	mainScreenHandler(w, data)
+    
+	// tmpl, _ := template.ParseFiles("index/signIn.html")
+
+    // tmpl.Execute(w, data)
+
+}
+
+// Handle logout event
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session-name")
+
+	// Revoke authentication
+	delete(session.Values, "user_id")
+	session.Save(r, w)
+
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+
+// Create the user
+func createUserHandler(w http.ResponseWriter, r *http.Request) {
+	data.CreateUser = true
+    
+	mainScreenHandler(w, data)
+	//tmpl, _ := template.ParseFiles("index/signIn.html")
+
+    //tmpl.Execute(w, data)
+}
+
+
+// Submit the creation of user
+func createUserSubmitHandler(w http.ResponseWriter, r *http.Request) {
+	password := r.FormValue("password")
+	username := r.FormValue("username")
+	var createUser bool
+	if username != "" || password != "" {
+		createUser = jsonMod.SaveUserJson(username, password)
+	}
+
+	if createUser {
+		http.Redirect(w,r, "/login", http.StatusSeeOther)
+	} else {
+		http.Redirect(w,r, "/create_user", http.StatusSeeOther)
+	}
+
+}
+
+
+func authHandler(w http.ResponseWriter, r *http.Request) {
+	password := r.FormValue("password")
+	username := r.FormValue("username")
+
+	//fmt.Println(username, password)
+	authSuccess := userAuth.AuthenticateUser(username, password)
+
+	if authSuccess {
+		fmt.Println("login succeeded")
+		
+		userID := 123
+
+		session, _ := store.Get(r, "session-name")
+		session.Values["user_id"] = userID
+		session.Save(r, w)
+
+		// Generate a session token
+        sessionID := generateSessionID()
+
+
+        // Store the session token in a cookie
+        http.SetCookie(w, &http.Cookie{
+            Name:    "sessionID",
+            Value:   sessionID,
+            Expires: time.Now().Add(24 * time.Hour), // Set cookie expiration time
+            Path:    "/",
+        })
+
+		http.Redirect(w, r, "/", http.StatusFound)
+
+
+	} else {
+		fmt.Println("login failed")
+		http.Redirect(w, r, "/", http.StatusFound)
+
+	}
+
+
+}
+
+func generateSessionID() string {
+    // Generate a random session ID (dummy example)
+    const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    b := make([]byte, 32)
+    for i := range b {
+        b[i] = letters[rand.Intn(len(letters))]
+    }
+    return string(b)
 }
 
 
 func main() {
 
 	http.HandleFunc("/", handler)
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/logout", logoutHandler)
+	http.HandleFunc("/create_user", createUserHandler)
+	http.HandleFunc("/create_user_submit", createUserSubmitHandler)
+	http.HandleFunc("/auth", authHandler)
 	http.HandleFunc("/question", questionHandler)
 	http.HandleFunc("/submit", submitHandler)
 	http.HandleFunc("/next", nextHandler)
@@ -356,5 +458,9 @@ func main() {
 	http.HandleFunc("/wordcount_changed", wordcountChangeHandler)
 	http.HandleFunc("/language_changed", languageChangeHandler)
 	http.HandleFunc("/word_result", wordResultHandler)
+	http.HandleFunc("/add_word", addWordMainHandler)
+	http.HandleFunc("/add_word_save", addWordListHandler)
+	http.HandleFunc("/add_word_final", addWordsHandler)
 	http.ListenAndServe(":8080", nil)
+
 }

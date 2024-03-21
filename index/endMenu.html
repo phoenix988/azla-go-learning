@@ -4,9 +4,11 @@
             alt='flag-of-azerbajani' 
             width='300' height='150'>
     <h1 class='app-title'>AZLA</h1>
-        <p class='word-list'>You Have Reached The End<p>
+    <div class='word-list'>
+        <p>You Have Reached The End<p>
         <p class='correct-text'>Number of Correct {{.CorrectAnswers}}</p>
         <p class='incorrect-text'>Number of Incorrect {{.InCorrectAnswers}}<p/>
-    <div><button type='submit' hx-post='/word_result' hx-target='#resultMenu'>Result</button><div>
-    <div><button type='submit' onclick="hidePanel()">Back</button><div>
+    </div>
+    <div><button class='backButton' type='submit' hx-post='/word_result' hx-target='#resultMenu'>Result</button><div>
+    <div><button class='backButton' type='submit' onclick="hidePanel()">Back</button><div>
 </form></div>

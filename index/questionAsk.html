@@ -36,7 +36,7 @@
           height="150"
         />
         <h1 class="app-title">AZLA</h1>
-        <p id="wordQuestion">
+        <p class='questionString' id="wordQuestion">
           <span> {{.CurrentIndex}} </span> What is
           <span class="wordQuestion"> {{.CurrentWord}} </span> in
           <span class="wordLanguage"> {{.SelectedLanguage}} </span> ?
@@ -47,17 +47,17 @@
         <button
           type="submit"
           name="prev"
-          class="prevButton"
+          class='moveButtons'
           hx-post="/prev"
           hx-target="#wordQuestion"
         >
           Previous
         </button>
-        <button type="submit" name="questionButton" onclick="hidePanel()">
-          {{.ExamModeString}}
+        <button type="submit" class='moveButtons' name="questionButton" onclick="hidePanel()">
+              {{.ExamModeString}}
         </button>
         <div>
-          <button type="submit" hx-post="/" hx-target="#questionWindow">
+          <button class='backButton' type="submit" hx-post="/" hx-target="#questionWindow">
             Back
           </button>
         </div>
