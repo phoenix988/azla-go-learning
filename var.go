@@ -4,6 +4,7 @@ package main
 // Plus the main pagedata I want to pass to the template
 
 import (
+	"azla_go_learning/internal/json"
 	"github.com/gorilla/sessions"
 	"html/template"
 )
@@ -15,8 +16,8 @@ var languageOptions []string = []string{"Azerbajani", "English"}
 var amountOfWords = []int{5, 10, 15, 20, 25, 30} // Amount of words to choose from
 
 // JsonPath
-var jsonPath = "data/data.json"
-var jsonPathUser = "data/data.json"
+var jsonPath = jsonMod.JsonPathUser
+var jsonPathUser = jsonMod.JsonPath
 
 // Create session store
 var store = sessions.NewCookieStore([]byte("secret-key"))
@@ -32,6 +33,7 @@ type User struct {
 type PageData struct {
 	WordListOptions         []string // Wordlist options
 	WordList                map[string]map[string]string
+	WordListName            string
 	SelectedWordList        string   // Selected wordlist option
 	SelectedLanguage        string   // Selected Language Option
 	Words                   []string // For all words
@@ -54,6 +56,8 @@ type PageData struct {
 	InCorrectAnswersList    map[string]string
 	CreateUser              bool
 	IsSignedIn              bool
+	FailedLoginAttempt      bool
+	LoginUserName           string
 }
 
 // Create table for the data to pass to the template

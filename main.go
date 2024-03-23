@@ -1,21 +1,19 @@
 package main
 
 import (
+	"azla_go_learning/internal/json"
+	"azla_go_learning/internal/userAuth"
+	"azla_go_learning/internal/words"
+	//"azla_go_learning/internal/database"
 	"fmt"
 	"html/template"
 	"net/http"
 	"strings"
 	"time"
-	"math/rand"
-	"azla_go_learning/internal/words"
-	"azla_go_learning/internal/json"
-	"azla_go_learning/internal/userAuth"
 )
 
-
-
 // Parse index.html
-func mainScreenHandler(w http.ResponseWriter, data PageData) {
+func MainMenuIndex(w http.ResponseWriter, data PageData) {
 
 	// Parse the HTML template
 	tmpl, err := template.ParseFiles("index/index.html")
@@ -37,6 +35,26 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	data.CorrectAnswersList = map[string]string{}
 	data.InCorrectAnswersList = map[string]string{}
 	data.AvailableWords = []string{}
+
+	wordlist := words.CreateWordlist()
+
+	session, _ := store.Get(r, "session-name")
+	username := session.Values["username"]
+
+	importWordsFromJson, _ := jsonMod.ReadWordJson(jsonMod.JsonPath, username.(string))
+
+	for key, value := range importWordsFromJson.Wordlist[username.(string)] {
+		wordlist[key] = value
+	}
+
+	for key, value := range importWordsFromJson.Wordlist[username.(string)] {
+		if _, ok := wordlist[key]; !ok {
+			wordlist[key] = value
+		}
+	}
+
+	data.WordList = wordlist
+
 	var words = []string{}
 	var correct = []string{}
 
@@ -150,7 +168,7 @@ func nextHandler(w http.ResponseWriter, r *http.Request) {
 				if data.IsComplete[currentCorrect] == false {
 					data.InCorrectAnswers += 1
 					data.IsComplete[currentCorrect] = true
-					data.InCorrectAnswersList[currentCorrect + " Word: " + data.CurrentWord] = userAnswer
+					data.InCorrectAnswersList[currentCorrect+" Word: "+data.CurrentWord] = userAnswer
 					fmt.Println("Incorrect, Correct:", data.CurrentCorrect)
 				}
 			}
@@ -183,7 +201,7 @@ func nextHandler(w http.ResponseWriter, r *http.Request) {
 				if data.IsComplete[currentCorrect] == false {
 					data.InCorrectAnswers += 1
 					data.IsComplete[currentCorrect] = true
-					data.InCorrectAnswersList[currentCorrect + " Word: " + data.CurrentWord] = userAnswer
+					data.InCorrectAnswersList[currentCorrect+" Word: "+data.CurrentWord] = userAnswer
 				}
 				fmt.Println("Incorrect, Correct:", currentCorrect)
 			}
@@ -286,52 +304,55 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	// Create wordlist
 	var wordlist = words.CreateWordlist()
-	// Read the json data file and append new words if they exist
-	importWordsFromJson, _ := jsonMod.ReadWordJson(jsonPath)
 
-
-	for key, value := range importWordsFromJson.Wordlist {
-		wordlist[key] = value
-	}
-
-	for key, value := range importWordsFromJson.Wordlist {
-	    if _, ok := wordlist[key]; !ok {
-	        wordlist[key] = value
-	    }
-	}
-
-	var wordListOptions = []string{}
-
-	data.WordList = wordlist
-
-	// Define the Wordlist options and append them to the wordListOptions slice
-	for key := range data.WordList {
-		wordListOptions = append(wordListOptions, key)
-
-		//for i := 0; i < len(wordlist[key]); i++ {
-		//	amountOfWords = append(amountOfWords, i+1)
-		//}
-	}
+	session, _ := store.Get(r, "session-name")
 
 	// Create a PageData struct to pass to the template
 	data := PageData{
-		WordListOptions:         wordListOptions,
 		LanguageOptions:         languageOptions,
 		MaxAmountOfWordsOptions: amountOfWords,
 	}
-
-	session, _ := store.Get(r, "session-name")
 	
+
 	// Check if user is authenticated
 	userID, ok := session.Values["user_id"].(int)
 	if !ok || userID == 0 {
 		// User is not authenticated, redirect to login page
 		data.IsSignedIn = false
-		mainScreenHandler(w, data)
+		MainMenuIndex(w, data)
 		return
 	} else {
+
 		data.IsSignedIn = true
-		mainScreenHandler(w, data)
+		username := session.Values["username"]
+		data.LoginUserName = username.(string)
+		// Read the json data file and append new words if they exist
+		importWordsFromJson, _ := jsonMod.ReadWordJson(jsonMod.JsonPath, data.LoginUserName)
+
+		for key, value := range importWordsFromJson.Wordlist[data.LoginUserName] {
+			wordlist[key] = value
+		}
+
+		for key, value := range importWordsFromJson.Wordlist[data.LoginUserName] {
+			if _, ok := wordlist[key]; !ok {
+				wordlist[key] = value
+			}
+		}
+
+		var wordListOptions = []string{}
+
+		// Define the Wordlist options and append them to the wordListOptions slice
+		for key := range wordlist {
+			wordListOptions = append(wordListOptions, key)
+
+			//for i := 0; i < len(wordlist[key]); i++ {
+			//	amountOfWords = append(amountOfWords, i+1)
+			//}
+		}
+
+		data.WordListOptions = wordListOptions
+
+		MainMenuIndex(w, data)
 		fmt.Println("User is authenticated")
 
 	}
@@ -342,11 +363,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	data.CreateUser = false
 
-	//	mainScreenHandler(w, data)
-    
+	//	MainMenuIndex(w, data)
+
 	// tmpl, _ := template.ParseFiles("index/signIn.html")
 
-    // tmpl.Execute(w, data)
+	// tmpl.Execute(w, data)
 
 }
 
@@ -361,17 +382,17 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-
 // Create the user
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
 	data.CreateUser = true
-    
-	mainScreenHandler(w, data)
+
+	MainMenuIndex(w, data)
+
+	data.CreateUser = false
 	//tmpl, _ := template.ParseFiles("index/signIn.html")
 
-    //tmpl.Execute(w, data)
+	//tmpl.Execute(w, data)
 }
-
 
 // Submit the creation of user
 func createUserSubmitHandler(w http.ResponseWriter, r *http.Request) {
@@ -383,66 +404,72 @@ func createUserSubmitHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if createUser {
-		http.Redirect(w,r, "/login", http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	} else {
-		http.Redirect(w,r, "/create_user", http.StatusSeeOther)
+		http.Redirect(w, r, "/create_user", http.StatusSeeOther)
 	}
 
 }
-
 
 func authHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	username := r.FormValue("username")
 
-	//fmt.Println(username, password)
 	authSuccess := userAuth.AuthenticateUser(username, password)
 
 	if authSuccess {
 		fmt.Println("login succeeded")
-		
+
+		UserData, _ := jsonMod.ReadUserJson(jsonMod.JsonPathUser)
+
+		uuID := UserData.User[username]["uuid"]
+
 		userID := 123
 
 		session, _ := store.Get(r, "session-name")
 		session.Values["user_id"] = userID
+		session.Values["uuID"] = uuID
+		session.Values["username"] = username
 		session.Save(r, w)
 
 		// Generate a session token
-        sessionID := generateSessionID()
+		sessionID := generateSessionID()
 
-
-        // Store the session token in a cookie
-        http.SetCookie(w, &http.Cookie{
-            Name:    "sessionID",
-            Value:   sessionID,
-            Expires: time.Now().Add(24 * time.Hour), // Set cookie expiration time
-            Path:    "/",
-        })
+		// Store the session token in a cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:    "sessionID",
+			Value:   sessionID,
+			Expires: time.Now().Add(24 * time.Hour), // Set cookie expiration time
+			Path:    "/",
+		})
 
 		http.Redirect(w, r, "/", http.StatusFound)
 
+		data.FailedLoginAttempt = false
 
+		data.CreateUser = false
 	} else {
 		fmt.Println("login failed")
-		http.Redirect(w, r, "/", http.StatusFound)
+		//http.Redirect(w, r, "/", http.StatusFound)
+		data.FailedLoginAttempt = true
+
+		data.CreateUser = false
+
+		MainMenuIndex(w, data)
 
 	}
 
-
 }
-
-func generateSessionID() string {
-    // Generate a random session ID (dummy example)
-    const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    b := make([]byte, 32)
-    for i := range b {
-        b[i] = letters[rand.Intn(len(letters))]
-    }
-    return string(b)
-}
-
 
 func main() {
+	//db := database.Connect()
+	//database.CreateWordListTable(db)
+	//id := database.InsertNewWordList(db)
+	//fmt.Println(id)
+	//database.ReadWord(db)
+
+	http.Handle("/theme/", http.StripPrefix("/theme/", http.FileServer(http.Dir("theme"))))
+	http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("scripts"))))
 
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/login", loginHandler)

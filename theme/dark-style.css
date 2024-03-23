@@ -1,0 +1,456 @@
+body {
+  background-color: #161821;
+}
+.app-title {
+  color: #f8f8f2;
+  margin-top: 50px;
+}
+p {
+  color: #f8f8f2;
+  font-family: Arial, sans-serif; /* Choose a suitable font */
+  font-size: 16px; /* Adjust the font size */
+  line-height: 1.5;
+}
+
+h2 {
+  color: #f8f8f2;
+}
+label {
+  color: #f8f8f2;
+}
+
+div {
+  color: #f8f8f2;
+  font-family: Arial, sans-serif; /* Choose a suitable font */
+  font-size: 16px; /* Adjust the font size */
+  line-height: 1.5;
+}
+
+button {
+  background-color: #84a0c6; /* Blue background color */
+  color: #fff; /* White text color */
+  border: none; /* Remove border */
+  padding: 10px 20px; /* Padding around the text */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Show pointer cursor on hover */
+  font-size: 16px; /* Font size */
+  margin-left: 10px;
+  margin-top: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 1);
+}
+
+button:hover {
+  background-color: #444b71; /* Darker blue background color on hover */
+}
+
+button:active {
+  background-color: #004080; /* Even darker blue background color on click */
+}
+
+input[type="text"] {
+  padding: 10px; /* Padding around the text */
+  border: 1px solid #ccc; /* Border color */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 16px; /* Font size */
+  width: 40%; /* Width of the input box */
+  box-sizing: border-box; /* Include padding and border in width calculation */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 1);
+}
+
+input[type="password"] {
+  padding: 10px; /* Padding around the text */
+  border: 1px solid #ccc; /* Border color */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 16px; /* Font size */
+  width: 40%; /* Width of the input box */
+  box-sizing: border-box; /* Include padding and border in width calculation */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 40);
+  margin-top: 2px;
+}
+
+input[type="text"]:focus {
+  outline: none; /* Remove default focus outline */
+  border-color: #a093c7; /* Border color on focus */
+  box-shadow: 0 0 5px rgba(100, 65, 120, 0.5); /* Box shadow on focus */
+}
+
+select {
+  padding: 10px; /* Padding around the text */
+  border: 3px solid #84a0c6; /* Border color */
+  border-radius: 20px; /* Rounded corners */
+  font-size: 16px; /* Font size */
+  width: 30%; /* Width of the select box */
+  box-sizing: border-box; /* Include padding and border in width calculation */
+  background-color: #eceff4; /* Background color */
+  color: #161821;
+  appearance: none; /* Remove default styles (may not work on all browsers) */
+  cursor: pointer; /* Show pointer cursor */
+  margin: 10px 0;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 1);
+}
+
+/* Styling for select arrow icon */
+select::-ms-expand {
+  display: none; /* Hide arrow icon for IE browsers */
+}
+
+/* Styling for select arrow icon */
+select::after {
+  content: "\25BC"; /* Unicode character for down arrow */
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  pointer-events: none; /* Prevent click events on arrow */
+}
+
+/* Style select options */
+select option {
+  padding: 10px; /* Padding around the text */
+  background-color: #161821; /* Background color */
+  color: #ffffff; /* Background color */
+}
+
+select option:hover {
+  background-color: #84a0c6;
+  color: #000;
+  border: 1px solid #ccc; /* Border color */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Style select when focused */
+select:focus {
+  outline: none; /* Remove default focus outline */
+  border-color: #a093c7; /* Border color on focus */
+  box-shadow: 0 0 5px rgba(120, 123, 255, 0.5); /* Box shadow on focus */
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 10px; /* Set the width of the custom checkbox */
+  height: 10px; /* Set the height of the custom checkbox */
+  border: 1px solid #ccc; /* Border color */
+  border-radius: 4px; /* Rounded corners */
+  outline: none; /* Remove default focus outline */
+  cursor: pointer; /* Show pointer cursor */
+  margin-top: 30px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Style the custom checkbox when it's checked */
+input[type="checkbox"]:checked {
+  background-color: #84a0c6; /* Background color when checked */
+  border-color: #84a0c6; /* Border color when checked */
+}
+
+/* Style the custom checkbox when it's hovered */
+input[type="checkbox"]:hover {
+  border-color: #666; /* Border color when hovered */
+}
+
+label.checkbox-label {
+  display: inline-block;
+  position: relative;
+  margin-left: 5px; /* Add some space between the checkbox and the label */
+  cursor: pointer; /* Show pointer cursor */
+  box-shadow: 5 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Style the label when the associated checkbox is checked */
+input[type="checkbox"]:checked + label.checkbox-label {
+  color: #84a0c6; /* Change text color when the checkbox is checked */
+}
+
+/* Style the label when hovered over */
+label.checkbox-label:hover {
+  text-decoration: underline; /* Underline the label text when hovered */
+}
+
+.checkbox-container {
+  postition: absolute;
+  align-items: center;
+  margin-top: 50px;
+  margin-right: 100px;
+  padding: 10px; /* Padding around the text */
+  border-radius: 20px; /* Rounded corners */
+  font-size: 20px; /* Font size */
+  width: 60%; /* Width of the select box */
+  background-color: #161821; /* Background color */
+  cursor: pointer; /* Show pointer cursor */
+  margin: 10px 0;
+  transition: transform 0.7s ease; /* Add transition for smooth animation */
+}
+
+.checkbox-label {
+  position: relative;
+  left: 0;
+}
+
+.wordQuestion {
+  color: #84a0c6;
+}
+.wordLanguage {
+  color: #b48ead;
+}
+.startButton {
+  width: 30%;
+}
+.settingButton {
+  width: 80%;
+}
+.backButton {
+  width: 40%;
+}
+.moveButtons {
+  width: 20%;
+}
+
+.questionString {
+  font-size: 25px;
+}
+
+.sign-in {
+  width: 40%;
+}
+.create-user {
+  width: 40%;
+  margin-bottom: 20px;
+}
+
+.margin-top {
+  margin-top: 20px;
+}
+
+.margin-bottom {
+  margin-bottom: 30px;
+}
+
+.errorMessage {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.message {
+  color: green;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* CSS for floating window container */
+.floatingWindow {
+  position: fixed;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f8d7da;
+  border: 1px solid #dc3545;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.floatingWindowSuc {
+  position: fixed;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #8fc1c3;
+  color: #000000;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.word-tree {
+  position: fixed; /* Fixed position so it stays in place when scrolling */
+  top: 0; /* Position at the top of the viewport */
+  left: 0; /* Position at the left side of the viewport */
+  width: 250px; /* Width of the side panel */
+  height: 100%; /* Full height of the viewport */
+  background-color: #2d3d50; /* Background color of the side panel */
+  color: #fff; /* Text color */
+  padding: 20px; /* Padding inside the side panel */
+  transition: transform 0.3s ease; /* Add transition for smooth animation */
+  transform: translateX(-250px);
+}
+
+/* Style the close button */
+.openbtn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 36px;
+  margin-left: 50px;
+  margin-bottom: 50px;
+  background-color: #2d3d50;
+  border-radius: 50px; /* Rounded corners */
+}
+
+.exitbtn {
+  position: absolute;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #84a0c6; /* Background color when checked */
+  border-radius: 50px; /* Rounded corners */
+  cursor: pointer;
+  top: 0;
+  left: 0;
+}
+
+.openbtn:hover {
+  background-color: #444b71; /* Darker blue background color on hover */
+}
+
+.exitbtn:hover {
+  background-color: #444b71; /* Darker blue background color on hover */
+}
+
+.input-group {
+  display: flex; /* Use flexbox to align items */
+  flex-direction: row; /* Align items horizontally */
+  gap: 10px; /* Add some space between the select boxes */
+}
+
+.select-box {
+  flex: 1; /* Make each select box fill available space */
+}
+
+.text-main {
+  margin-top: 50px;
+}
+.image {
+  margin-top: 50px;
+}
+.correct-text {
+  color: #b4be82;
+}
+.incorrect-text {
+  color: #e27878;
+}
+.side-list {
+  margin-top: 70px;
+}
+
+.word-list {
+  margin-top: 50px;
+  margin-right: 100px;
+  padding: 10px; /* Padding around the text */
+  border: 1px solid #ccc; /* Border color */
+  border-radius: 20px; /* Rounded corners */
+  font-size: 25px; /* Font size */
+  width: 60%; /* Width of the select box */
+  background-color: #161821; /* Background color */
+  cursor: pointer; /* Show pointer cursor */
+  margin: 10px 0;
+  transition: transform 0.7s ease; /* Add transition for smooth animation */
+}
+
+.main-list {
+  box-shadow: 0 4px 5px rgba(255, 255, 255, 1);
+  border: 3px solid #ccc; /* Border color */
+  border-radius: 20px; /* Rounded corners */
+  margin: 50px;
+  position: relative;
+}
+
+.buttonList {
+  position: fixed; /* Fixed position so it stays in place when scrolling */
+  top: 70%; /* Position at the top of the viewport */
+  left: 40%; /* Position at the left side of the viewport */
+  width: 20%; /* Width of the side panel */
+  height: 100%; /* Full height of the viewport */
+  background-color: #161821; /* Background color of the side panel */
+  border-radius: 20px; /* Rounded corners */
+  color: #fff; /* Text color */
+  padding: 20px; /* Padding inside the side panel */
+  transition: transform 0.3s ease; /* Add transition for smooth animation */
+}
+
+.input-box {
+  width: 300px; /* Adjust width as needed */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #333;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+/* Adjust the side panel button position for smaller screens */
+@media screen and (max-width: 600px) {
+  .openbtn {
+    position: absolute;
+    top: 20px; /* Adjust the top margin to create space for the title */
+    left: -20px; /* Adjust the left margin */
+    font-size: 24px; /* Reduce the font size */
+  }
+
+  .questionString {
+    font-size: 20px;
+  }
+  .app-title {
+    color: #f8f8f2;
+    margin-top: 0px;
+  }
+
+  .title-container {
+    padding-left: 30px; /* Add left padding to create space for the button */
+    padding-top: 20px;
+  }
+  .image {
+    width: 150px;
+    height: 75px;
+  }
+
+  .sign-in {
+    width: 66%;
+  }
+  .create-user {
+    width: 66%;
+  }
+
+  .main-list {
+    margin: 0px;
+  }
+
+  input[type="text"] {
+    padding: 10px; /* Padding around the text */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    width: 66%; /* Width of the input box */
+    box-sizing: border-box; /* Include padding and border in width calculation */
+  }
+
+  input[type="password"] {
+    width: 66%; /* Width of the input box */
+  }
+
+  select {
+    width: 60%; /* Width of the select box */
+  }
+
+  .startButton {
+    width: 60%;
+  }
+  .backButton {
+    width: 60%;
+  }
+  .moveButtons {
+    width: 29%;
+  }
+
+  .exitbtn {
+    position: relative;
+    margin-bottom: 20px;
+    background-color: #84a0c6; /* Background color when checked */
+    width: 60%;
+  }
+}

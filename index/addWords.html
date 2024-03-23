@@ -10,9 +10,9 @@
         }, 5000); // 5000 milliseconds = 5 seconds
     }
 
-    function hideWindowAfterTimeout() {
+    function hideWindowAfterTimeout(id) {
         setTimeout(function() {
-            var message = document.getElementById('floatingWindow');
+            var message = document.getElementById(id);
             if (message) {
                 message.style.display = 'none'; // Hide the message
             }
@@ -28,11 +28,12 @@
              width='300' height='150'>
      <h1 class='Add-new-Word'>AZLA</h1>
      {{ if not .IsWordlist }}
+     <div class='main-list'>
        <div>
           <input id='addWordList' 
                  type="text" 
                  placeholder="Name of wordlist"
-                 name="addWordList" />
+                 name="addWordList" class='margin-top' />
           <div>
             <button class='backButton'  
                     type='submit' 
@@ -40,24 +41,27 @@
                     hx-target='#addWordMenu'>Add Wordlist</button>
           <div>
        </div>
-       <div><button type='submit' class='backButton'>Back</button><div>
+       <div><button style="margin-bottom: 20px;" type='submit' class='backButton'>Back</button><div>
      {{ end }}
+    </div>
  </form>
 </div>
 <form hx-post='/' hx-target='#addWordMenu'>
 {{ if .IsWordlist }}
-    <div class='floatingWindowSuc' id='floatingWindow'>
+<div class='main-list'>
+    <div class='floatingWindowSuc' id='floatingWindowSuc'>
        <p class='message' id="addedMessage">Added Wordlist please enter the words</p>
     </div>
     <span>
-       <input type="text" placeholder="English Word" name="addWordList" />
-       <input type="text" placeholder="Aze Word" name="addWordList" />
+       <input type="text" placeholder="English Word" name="engText" class='margin-top'/>
+       <input type="text" placeholder="Aze Word" name="azeText" class='margin-top'/>
     </span>
-    <div><button type='submit' class='backButton'>Back</button><div>
+    <div><button type='submit' class='backButton' hx-post='/add_word_final' >Add Words</button><div>
+    <div><button style="margin-bottom: 20px;" type='submit' class='backButton'>Back</button><div>
      <script>
         // Call the function to hide the message after 5 seconds
         hideMessageAfterTimeout();
-        hideWindowAfterTimeout();
+        hideWindowAfterTimeout('floatingWindowSuc');
     </script>
 {{ end }}
 
@@ -68,8 +72,9 @@
      <script>
         // Call the function to hide the message after 5 seconds
         hideMessageAfterTimeout();
-        hideWindowAfterTimeout();
+        hideWindowAfterTimeout('floatingWindow');
     </script>
+</div>
 {{ end }}
 </form>
 </body>
