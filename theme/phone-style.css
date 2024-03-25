@@ -1,0 +1,96 @@
+/* Adjust the side panel button position for smaller screens */
+@media screen and (max-width: 600px) {
+  .openbtn {
+    position: absolute;
+    top: 20px; /* Adjust the top margin to create space for the title */
+    left: -20px; /* Adjust the left margin */
+    font-size: 24px; /* Reduce the font size */
+  }
+
+  .questionString {
+    font-size: 20px;
+  }
+
+  .app-title {
+    margin-right: 17px;
+    margin-top: 5px;
+    font-size: 26px;
+  }
+
+  .text-main {
+    margin-top: 5px;
+  }
+
+  .title-container {
+    padding-left: 30px; /* Add left padding to create space for the button */
+    padding-top: 20px;
+  }
+
+  .image {
+    width: 150px;
+    height: 75px;
+    margin-top: -5px;
+  }
+
+  .image2 {
+    width: 150px;
+    height: 75px;
+    margin-top: 5px;
+  }
+
+  .sign-in {
+    width: 66%;
+  }
+  .create-user {
+    width: 66%;
+  }
+
+  .main-list {
+    margin: 0px;
+  }
+
+  .word-tree {
+    width: 0px; /* Width of the side panel */
+  }
+
+  input[type="text"] {
+    padding: 10px; /* Padding around the text */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    width: 66%; /* Width of the input box */
+    box-sizing: border-box; /* Include padding and border in width calculation */
+  }
+
+  input[type="password"] {
+    width: 66%; /* Width of the input box */
+  }
+
+  select {
+    width: 60%; /* Width of the select box */
+  }
+
+  .startButton {
+    width: 60%;
+    background-color: #84a0c6; /* Background color when checked */
+    width: 60%;
+  }
+  .backButton {
+    width: 60%;
+    margin-bottom: 20px;
+  }
+  .moveButtons {
+    width: 29%;
+  }
+
+  .exitbtn {
+    position: relative;
+    margin-bottom: 0px;
+    background-color: #84a0c6; /* Background color when checked */
+    width: 60%;
+  }
+
+  .new-words[type="text"] {
+    width: 40%;
+  }
+}
