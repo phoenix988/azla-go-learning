@@ -1,10 +1,15 @@
 <div id='resultMenu'><form hx-post='/'> 
     <div class='main-list'>
+       <ul>
+          <li><a href="default.asp">Home</a></li>
+          <li><a hx-post="/" hx-target="#questionWindow">Back</a></li>
+          <li><a hx-post="/logout" hx-target="#MainMenu">Sign Out</a></li>
+       </ul>
+       <h1 class='app-title'>AZLA</h1>
        <img class='image' 
                src='https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg' 
                alt='flag-of-azerbajani' 
                width='300' height='150'>
-       <h1 class='app-title'>AZLA</h1>
            <p>You Have Reached The End<p>
            <p class='correct-text'>Number of Correct {{.CorrectAnswers}}</p>
            <p class='incorrect-text'>Number of Incorrect {{.InCorrectAnswers}}<p/>

@@ -1,0 +1,40 @@
+<form hx-post="/next">
+  <div class="main-list">
+    <ul>
+      <li><a href="default.asp">Home</a></li>
+      <li><a hx-post="/" hx-target="#questionWindow">Back</a></li>
+      <li><a hx-post="/logout" hx-target="#MainMenu">Sign Out</a></li>
+    </ul>
+    {{ if .IsCorrect }}
+    <h1 class="app-title">AZLA</h1>
+    <img
+      class="image"
+      src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg"
+      alt="alternative-text"
+      width="300"
+      height="150"
+    />
+    <h2>Your answer is correct: {{ .UserAnswer }}</h2>
+    <h2>Word: {{ .CurrentCorrect }}</h2>
+    <button type="submit" name="next" class="margin-bottom">Next</button>
+    {{ else }}
+    <h1 class="app-title">AZLA</h1>
+    <img
+      class="image"
+      src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg"
+      alt="alternative-text"
+      width="300"
+      height="150"
+    />
+    <h2>
+      Your answer is Incorrect: {{.UserAnswer}}
+      <p></p>
+    </h2>
+    <h2>
+      Correct answer is:
+      <h2 style="color: #ff5555">{{.CurrentCorrect}}</h2>
+    </h2>
+    <button type="submit" name="next" class="margin-bottom">Next</button>
+    {{ end }}
+  </div>
+</form>

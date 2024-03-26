@@ -1,10 +1,12 @@
 body {
   background-color: #161821;
 }
+
 .app-title {
   color: #f8f8f2;
   margin-top: 50px;
 }
+
 p {
   color: #f8f8f2;
   font-family: Arial, sans-serif; /* Choose a suitable font */
@@ -15,6 +17,7 @@ p {
 h2 {
   color: #f8f8f2;
 }
+
 label {
   color: #f8f8f2;
 }
@@ -26,12 +29,26 @@ div {
   line-height: 1.5;
 }
 
+.popup-error {
+  border: 3px solid #ccc;
+  border-radius: 20px;
+  margin: 0px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  padding: 10px;
+  transform: translate(-50%, -50%);
+  background-color: #f8d7da;
+  border: 1px solid #dc3545;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
 button {
   background-color: #84a0c6; /* Blue background color */
   color: #fff; /* White text color */
   border: none; /* Remove border */
   padding: 10px 20px; /* Padding around the text */
-  border-radius: 5px; /* Rounded corners */
+  border-radius: 20px; /* Rounded corners */
   cursor: pointer; /* Show pointer cursor on hover */
   font-size: 16px; /* Font size */
   margin-left: 10px;
@@ -41,6 +58,10 @@ button {
 
 button:hover {
   background-color: #444b71; /* Darker blue background color on hover */
+}
+
+.moveButtons:hover {
+  background-color: #333333; /* Darker blue background color on hover */
 }
 
 button:active {
@@ -72,6 +93,16 @@ input[type="text"]:focus {
   outline: none; /* Remove default focus outline */
   border-color: #a093c7; /* Border color on focus */
   box-shadow: 0 0 5px rgba(100, 65, 120, 0.5); /* Box shadow on focus */
+}
+
+.new-words[type="text"] {
+  padding: 10px; /* Padding around the text */
+  border: 1px solid #ccc; /* Border color */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 16px; /* Font size */
+  width: 20%; /* Width of the input box */
+  box-sizing: border-box; /* Include padding and border in width calculation */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 1);
 }
 
 select {
@@ -191,29 +222,40 @@ label.checkbox-label:hover {
 .wordQuestion {
   color: #84a0c6;
 }
+
 .wordLanguage {
   color: #b48ead;
 }
+
 .startButton {
   width: 30%;
 }
+
 .settingButton {
   width: 80%;
 }
+
 .backButton {
-  width: 40%;
+  width: 50%;
 }
+
 .moveButtons {
   width: 20%;
+  box-shadow: none;
 }
 
 .questionString {
   font-size: 25px;
 }
 
+.fontSizeMedium {
+  font-size: 20px;
+}
+
 .sign-in {
   width: 40%;
 }
+
 .create-user {
   width: 40%;
   margin-bottom: 20px;
@@ -239,34 +281,6 @@ label.checkbox-label:hover {
   margin-top: 5px;
 }
 
-/* CSS for floating window container */
-.floatingWindow {
-  position: fixed;
-  top: 25%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #f8d7da;
-  border: 1px solid #dc3545;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-}
-
-.floatingWindowSuc {
-  position: fixed;
-  top: 25%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #8fc1c3;
-  color: #000000;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-}
-
 .word-tree {
   position: fixed; /* Fixed position so it stays in place when scrolling */
   top: 0; /* Position at the top of the viewport */
@@ -288,27 +302,35 @@ label.checkbox-label:hover {
   font-size: 36px;
   margin-left: 50px;
   margin-bottom: 50px;
-  background-color: #2d3d50;
+  margin-top: 50px;
+  background-color: #161821;
   border-radius: 50px; /* Rounded corners */
+  box-shadow: none;
 }
 
-.exitbtn {
+.dropbtn {
   position: absolute;
   padding: 10px 20px;
-  font-size: 16px;
-  background-color: #84a0c6; /* Background color when checked */
+  font-size: 30px;
+  background-color: #161821; /* Background color when checked */
   border-radius: 50px; /* Rounded corners */
+  border: none;
   cursor: pointer;
-  top: 0;
-  left: 0;
+  box-shadow: none;
+}
+
+.account-dropdown {
+  display: inline-block;
+  float: left;
+  position: relative;
 }
 
 .openbtn:hover {
-  background-color: #444b71; /* Darker blue background color on hover */
+  background-color: #333333; /* Darker blue background color on hover */
 }
 
-.exitbtn:hover {
-  background-color: #444b71; /* Darker blue background color on hover */
+.dropbtn:hover {
+  background-color: #333333; /* Darker blue background color on hover */
 }
 
 .input-group {
@@ -324,15 +346,19 @@ label.checkbox-label:hover {
 .text-main {
   margin-top: 50px;
 }
+
 .image {
   margin-top: 50px;
 }
+
 .correct-text {
   color: #b4be82;
 }
+
 .incorrect-text {
   color: #e27878;
 }
+
 .side-list {
   margin-top: 70px;
 }
@@ -349,6 +375,7 @@ label.checkbox-label:hover {
   cursor: pointer; /* Show pointer cursor */
   margin: 10px 0;
   transition: transform 0.7s ease; /* Add transition for smooth animation */
+  box-shadow: none;
 }
 
 .main-list {
@@ -381,76 +408,138 @@ label.checkbox-label:hover {
   color: #333;
   outline: none;
   transition: border-color 0.3s ease;
+  top: 50%;
 }
 
-/* Adjust the side panel button position for smaller screens */
-@media screen and (max-width: 600px) {
-  .openbtn {
-    position: absolute;
-    top: 20px; /* Adjust the top margin to create space for the title */
-    left: -20px; /* Adjust the left margin */
-    font-size: 24px; /* Reduce the font size */
-  }
+.options-container {
+  display: none;
+  position: absolute;
+  background-color: #333333;
+  min-width: 160px;
+  border-radius: 20px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  margin-top: 70px;
+  margin-left: 10px;
+}
 
-  .questionString {
-    font-size: 20px;
-  }
-  .app-title {
-    color: #f8f8f2;
-    margin-top: 0px;
-  }
+.options-container a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
 
-  .title-container {
-    padding-left: 30px; /* Add left padding to create space for the button */
-    padding-top: 20px;
-  }
-  .image {
-    width: 150px;
-    height: 75px;
-  }
+.options-container a:hover {
+  background-color: #ddd;
+}
 
-  .sign-in {
-    width: 66%;
-  }
-  .create-user {
-    width: 66%;
-  }
+.show {
+  display: block;
+}
 
-  .main-list {
-    margin: 0px;
-  }
+.dropdown-buttons {
+  background-color: #333333;
+}
 
-  input[type="text"] {
-    padding: 10px; /* Padding around the text */
-    border: 1px solid #ccc; /* Border color */
-    border-radius: 5px; /* Rounded corners */
-    font-size: 16px; /* Font size */
-    width: 66%; /* Width of the input box */
-    box-sizing: border-box; /* Include padding and border in width calculation */
-  }
+.dropdown-buttons:hover {
+  background-color: #161821;
+}
 
-  input[type="password"] {
-    width: 66%; /* Width of the input box */
-  }
+.main-panel {
+  background-color: #ffffff;
+}
 
-  select {
-    width: 60%; /* Width of the select box */
-  }
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+  border-radius: 20px; /* Rounded corners */
+}
 
-  .startButton {
-    width: 60%;
-  }
-  .backButton {
-    width: 60%;
-  }
-  .moveButtons {
-    width: 29%;
-  }
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
 
-  .exitbtn {
-    position: relative;
-    margin-bottom: 20px;
-    background-color: #84a0c6; /* Background color when checked */
-    width: 60%;
+li a:hover {
+  background-color: #333333;
+}
+
+li {
+  float: left;
+}
+
+a {
+  display: block;
+  padding: 8px;
+  background-color: #161821;
+}
+
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* The actual popup (appears on top) */
+.popup .popuptext {
+  width: 160px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class when clicking on the popup container (hide and show the popup) */
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
+.noshadow {
+  box-shadow: none;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

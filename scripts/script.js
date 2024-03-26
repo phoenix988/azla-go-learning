@@ -1,6 +1,8 @@
 function openNav() {
     var panel = document.getElementById("word-tree");
+    var openbtn = document.getElementById("openBtn");
     panel.style.transform = "translateX(0)";
+    openbtn.style.backgroundColor = "#2d3d50";
 
     if (window.innerWidth <= 600) {
         // Adjust this threshold as needed
@@ -22,6 +24,19 @@ function closeNav() {
         panel.style.width = "250px";
     }
 }
+
+var openbtn = document.getElementById("openBtn");
+
+openbtn.addEventListener("mouseover", function() {
+    // Change background color when mouse hovers over the button
+    openbtn.style.backgroundColor = "#333333";
+});
+
+// Restore original background color when mouse moves out
+openbtn.addEventListener("mouseout", function() {
+    // Restore the original background color
+    openbtn.style.backgroundColor = "#2d3d50"; // or any other color code you want to set as default
+});
 
 document
     .getElementById("loginForm")
@@ -77,3 +92,28 @@ function hideWindowAfterTimeout(id) {
         }
     }, 5000); // 5000 milliseconds = 5 seconds
 }
+
+function dropDownToggle(event) {
+    // Prevent the default behavior of the button
+    event.preventDefault();
+
+    // Toggle the visibility of the options container
+    document.getElementById("optionsContainer").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+document.addEventListener("click", function(event) {
+    var dropdownButton = document.getElementById("dropdown-button");
+    var optionsContainer = document.getElementById("optionsContainer");
+
+    // Check if the clicked element is not the dropdown button or its descendant
+    if (
+        event.target !== optionsContainer &&
+        !optionsContainer.contains(event.target)
+    ) {
+        // Close the dropdown menu if it's currently open
+        if (optionsContainer.classList.contains("show")) {
+            optionsContainer.classList.remove("show");
+        }
+    }
+});

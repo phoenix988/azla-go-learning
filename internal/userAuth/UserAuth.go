@@ -6,6 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Autenticate the user
 func AuthenticateUser(username, password string) bool {
 	type Auth struct {
 		CheckUser bool
@@ -36,6 +37,5 @@ func AuthenticateUser(username, password string) bool {
 		return false
 	}
 
-	return false
 
 }

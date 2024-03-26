@@ -3,38 +3,26 @@ package main
 import (
 	"azla_go_learning/internal/json"
 	"azla_go_learning/internal/userAuth"
+	"azla_go_learning/internal/viewData"
 	"azla_go_learning/internal/words"
+	"azla_go_learning/internal/routes"
 	//"azla_go_learning/internal/database"
 	"fmt"
 	"html/template"
 	"net/http"
-	"strings"
 	"time"
 )
 
-// Parse index.html
-func MainMenuIndex(w http.ResponseWriter, data PageData) {
-
-	// Parse the HTML template
-	tmpl, err := template.ParseFiles("index/index.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// Execute the template and write the result to the response
-	tmpl.Execute(w, data)
-
-}
-
+// when you first start the quiz
 func questionHandler(w http.ResponseWriter, r *http.Request) {
-	data.CurrentQuestion = 0
-	data.MaxAmountOfWords = 0
-	data.CorrectAnswers = 0
-	data.InCorrectAnswers = 0
-	data.IsComplete = map[string]bool{}
-	data.CorrectAnswersList = map[string]string{}
-	data.InCorrectAnswersList = map[string]string{}
-	data.AvailableWords = []string{}
+	viewData.Data.CurrentQuestion = 0
+	viewData.Data.MaxAmountOfWords = 0
+	viewData.Data.CorrectAnswers = 0
+	viewData.Data.InCorrectAnswers = 0
+	viewData.Data.IsComplete = map[string]bool{}
+	viewData.Data.CorrectAnswersList = map[string]string{}
+	viewData.Data.InCorrectAnswersList = map[string]string{}
+	viewData.Data.AvailableWords = []string{}
 
 	wordlist := words.CreateWordlist()
 
@@ -53,34 +41,34 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data.WordList = wordlist
+	viewData.Data.WordList = wordlist
 
 	var words = []string{}
 	var correct = []string{}
 
 	if r.FormValue("examMode") != "" {
-		data.ExamMode = true
-		data.ExamModeAction = "/next"
-		data.ExamModeString = "Next"
+		viewData.Data.ExamMode = true
+		viewData.Data.ExamModeAction = "/next"
+		viewData.Data.ExamModeString = "Next"
 	} else {
-		data.ExamMode = false
-		data.ExamModeAction = "/submit"
-		data.ExamModeString = "Submit"
+		viewData.Data.ExamMode = false
+		viewData.Data.ExamModeAction = "/submit"
+		viewData.Data.ExamModeString = "Submit"
 	}
 
 	selectedWordList := r.FormValue("wordListOpt")
 	selectedLanguage := r.FormValue("languageOpt")
 	selectedCount := r.FormValue("wordCountOptions")
 
-	data.SelectedWordList = selectedWordList
-	data.SelectedLanguage = selectedLanguage
+	viewData.Data.SelectedWordList = selectedWordList
+	viewData.Data.SelectedLanguage = selectedLanguage
 
 	// Convert selected word count to int
-	data.MaxAmountOfWords = convertToNum(selectedCount)
+	viewData.Data.MaxAmountOfWords = convertToNum(selectedCount)
 
 	// Create the word and correct slices/arrays
-	for key, value := range data.WordList[selectedWordList] {
-		switch data.SelectedLanguage {
+	for key, value := range viewData.Data.WordList[selectedWordList] {
+		switch viewData.Data.SelectedLanguage {
 		case "Azerbajani":
 			words = append(words, key)
 			correct = append(correct, value)
@@ -91,164 +79,65 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Current word
-	currentWord := words[data.CurrentQuestion]
-	currentIndex := data.CurrentQuestion + 1
-	data.Words = words
-	data.Correct = correct
-
-	if data.MaxAmountOfWords >= len(data.Words) {
-		fmt.Println("Wordlist doesn't have enough words:", len(data.Words))
-		fmt.Println("Choosen option:", data.MaxAmountOfWords)
+	currentWord := words[viewData.Data.CurrentQuestion]
+	currentIndex := viewData.Data.CurrentQuestion + 1
+	
+	imageURLs, err := viewData.SearchImages(currentWord) // Example search query
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
 	}
 
-	for i := 0; i < len(data.Words); i++ {
-		if i > data.MaxAmountOfWords {
+	var selectedUrl string
+	for _, url := range imageURLs {
+		selectedUrl = url
+		break
+	}
+
+	viewData.Data.Words = words
+	viewData.Data.Correct = correct
+	viewData.Data.WordImage = selectedUrl
+
+	if viewData.Data.MaxAmountOfWords >= len(viewData.Data.Words) {
+		fmt.Println("Wordlist doesn't have enough words:", len(viewData.Data.Words))
+		fmt.Println("Choosen option:", viewData.Data.MaxAmountOfWords)
+	}
+
+	for i := 0; i < len(viewData.Data.Words); i++ {
+		if i > viewData.Data.MaxAmountOfWords {
 			break
 		} else {
-			data.AvailableWords = append(data.AvailableWords, data.Words[i])
+			viewData.Data.AvailableWords = append(viewData.Data.AvailableWords, viewData.Data.Words[i])
 		}
 	}
 
-	fmt.Println(data.AvailableWords)
+	fmt.Println(viewData.Data.AvailableWords)
 
-	if data.ExamMode {
+	if viewData.Data.ExamMode {
 
-		data.CurrentWord = currentWord
-		data.CurrentIndex = currentIndex
-		tmpl, _ := CreateQuestionTemp()
+		viewData.Data.CurrentWord = currentWord
+		viewData.Data.CurrentIndex = currentIndex
+		tmpl, _ := viewData.CreateQuestionTemp()
 
 		//tmpl, _ := template.New("t").Parse(htmlStr)
-		tmpl.Execute(w, data)
+		tmpl.Execute(w, viewData.Data)
 
 	} else {
 
 		//htmlStr := CreateQuestionTemp(currentIndex, currentWord, data, "/submit")
-		tmpl, err := CreateQuestionTemp()
+		tmpl, err := viewData.CreateQuestionTemp()
 
 		//tmpl, _ := template.New("t").Parse(htmlStr)
-		data.CurrentWord = currentWord
-		data.CurrentIndex = currentIndex
+		viewData.Data.CurrentWord = currentWord
+		viewData.Data.CurrentIndex = currentIndex
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		tmpl.Execute(w, data)
+		tmpl.Execute(w, viewData.Data)
 
 	}
-
-}
-
-func submitHandler(w http.ResponseWriter, r *http.Request) {
-	currentCorrect := strings.ToLower(data.Correct[data.CurrentQuestion])
-	data.CurrentCorrect = data.Correct[data.CurrentQuestion]
-	userAnswer := strings.ToLower(r.FormValue("answer"))
-
-	// Evaluates users response
-	evaluateAnswers(userAnswer, currentCorrect, w)
-
-}
-
-// Next question Handler
-func nextHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if you are on the last question
-	if data.CurrentQuestion >= len(data.Words) || data.CurrentQuestion >= data.MaxAmountOfWords-1 {
-		if data.ExamMode { // If exam mode is activated
-			currentCorrect := strings.ToLower(data.Correct[data.CurrentQuestion])
-			userAnswer := strings.ToLower(r.FormValue("answer"))
-			switch userAnswer {
-			case currentCorrect:
-				if data.IsComplete[currentCorrect] == false {
-					data.CorrectAnswers += 1
-					data.IsComplete[currentCorrect] = true
-					data.CorrectAnswersList[currentCorrect] = userAnswer
-					fmt.Println("Correct")
-				}
-			default:
-				if data.IsComplete[currentCorrect] == false {
-					data.InCorrectAnswers += 1
-					data.IsComplete[currentCorrect] = true
-					data.InCorrectAnswersList[currentCorrect+" Word: "+data.CurrentWord] = userAnswer
-					fmt.Println("Incorrect, Correct:", data.CurrentCorrect)
-				}
-			}
-		}
-
-		fmt.Println("correct: ", data.CorrectAnswers)
-		fmt.Println("incorrect: ", data.InCorrectAnswers)
-
-		// parse the end menu html file that displays the results
-		tmpl, _ := template.ParseFiles("index/endMenu.html")
-
-		tmpl.Execute(w, data)
-
-	} else {
-		data.CurrentQuestion += 1
-		if data.ExamMode {
-
-			currentCorrect := strings.ToLower(data.Correct[data.CurrentQuestion-1])
-			userAnswer := strings.ToLower(r.FormValue("answer"))
-
-			switch userAnswer {
-			case currentCorrect:
-				if data.IsComplete[currentCorrect] == false {
-					data.CorrectAnswers += 1
-					data.IsComplete[currentCorrect] = true
-					data.CorrectAnswersList[currentCorrect] = userAnswer
-				}
-				fmt.Println("Correct")
-			default:
-				if data.IsComplete[currentCorrect] == false {
-					data.InCorrectAnswers += 1
-					data.IsComplete[currentCorrect] = true
-					data.InCorrectAnswersList[currentCorrect+" Word: "+data.CurrentWord] = userAnswer
-				}
-				fmt.Println("Incorrect, Correct:", currentCorrect)
-			}
-
-			currentWord := data.Words[data.CurrentQuestion]
-			currentIndex := data.CurrentQuestion + 1
-			data.CurrentWord = currentWord
-			data.CurrentIndex = currentIndex
-
-			htmlStr, _ := CreateQuestionTemp()
-
-			//tmpl, _ := template.New("t").Parse(htmlStr)
-			htmlStr.Execute(w, data)
-		} else {
-			currentWord := data.Words[data.CurrentQuestion]
-			currentIndex := data.CurrentQuestion + 1
-			data.CurrentWord = currentWord
-			data.CurrentIndex = currentIndex
-
-			htmlStr, _ := CreateQuestionTemp()
-
-			htmlStr.Execute(w, data)
-
-		}
-
-	}
-
-}
-
-func prevHandler(w http.ResponseWriter, r *http.Request) {
-
-	currentWord := data.Words[data.CurrentQuestion-1]
-	currentIndex := data.CurrentQuestion
-	fmt.Println(data.CurrentQuestion)
-	var htmlStr string
-	htmlStr = fmt.Sprintf("<p class='questionString' id='wordQuestion'>"+
-		"<span id='wordQuestion'>%d </span>What is "+
-		"<span id='wordQuestion' class='wordQuestion'>%s"+
-		"</span> in <span class='wordLanguage'> %s</span> ?</p>", currentIndex, currentWord, data.SelectedLanguage)
-
-	tmpl, err := template.New("t").Parse(htmlStr)
-	if err != nil {
-		fmt.Println("Error Occures")
-	}
-	tmpl.Execute(w, nil)
-
-	data.CurrentQuestion -= 1
 
 }
 
@@ -266,13 +155,13 @@ func wordlistChangeHandler(w http.ResponseWriter, r *http.Request) {
 
 func wordResultHandler(w http.ResponseWriter, r *http.Request) {
 
-	for key, value := range data.InCorrectAnswersList {
+	for key, value := range viewData.Data.InCorrectAnswersList {
 		fmt.Println(key, value)
 	}
 
 	tmpl, _ := template.ParseFiles("index/resultMenu.html")
 
-	tmpl.Execute(w, data)
+	tmpl.Execute(w, viewData.Data)
 }
 
 func wordcountChangeHandler(w http.ResponseWriter, r *http.Request) {
@@ -299,76 +188,12 @@ func languageChangeHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Main Handler
-func handler(w http.ResponseWriter, r *http.Request) {
-
-	// Create wordlist
-	var wordlist = words.CreateWordlist()
-
-	session, _ := store.Get(r, "session-name")
-
-	// Create a PageData struct to pass to the template
-	data := PageData{
-		LanguageOptions:         languageOptions,
-		MaxAmountOfWordsOptions: amountOfWords,
-	}
-	
-
-	// Check if user is authenticated
-	userID, ok := session.Values["user_id"].(int)
-	if !ok || userID == 0 {
-		// User is not authenticated, redirect to login page
-		data.IsSignedIn = false
-		MainMenuIndex(w, data)
-		return
-	} else {
-
-		data.IsSignedIn = true
-		username := session.Values["username"]
-		data.LoginUserName = username.(string)
-		// Read the json data file and append new words if they exist
-		importWordsFromJson, _ := jsonMod.ReadWordJson(jsonMod.JsonPath, data.LoginUserName)
-
-		for key, value := range importWordsFromJson.Wordlist[data.LoginUserName] {
-			wordlist[key] = value
-		}
-
-		for key, value := range importWordsFromJson.Wordlist[data.LoginUserName] {
-			if _, ok := wordlist[key]; !ok {
-				wordlist[key] = value
-			}
-		}
-
-		var wordListOptions = []string{}
-
-		// Define the Wordlist options and append them to the wordListOptions slice
-		for key := range wordlist {
-			wordListOptions = append(wordListOptions, key)
-
-			//for i := 0; i < len(wordlist[key]); i++ {
-			//	amountOfWords = append(amountOfWords, i+1)
-			//}
-		}
-
-		data.WordListOptions = wordListOptions
-
-		MainMenuIndex(w, data)
-		fmt.Println("User is authenticated")
-
-	}
-
-}
 
 // Launch the login screen
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	data.CreateUser = false
+	viewData.Data.CreateUser = false
 
-	//	MainMenuIndex(w, data)
-
-	// tmpl, _ := template.ParseFiles("index/signIn.html")
-
-	// tmpl.Execute(w, data)
-
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 // Handle logout event
@@ -384,27 +209,39 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 // Create the user
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
-	data.CreateUser = true
+	viewData.Data.CreateUser = true
 
-	MainMenuIndex(w, data)
+	routes.MainMenuIndex(w, viewData.Data)
 
-	data.CreateUser = false
+	viewData.Data.CreateUser = false
 	//tmpl, _ := template.ParseFiles("index/signIn.html")
 
-	//tmpl.Execute(w, data)
+	//tmpl.Execute(w, viewData.Data)
 }
 
 // Submit the creation of user
 func createUserSubmitHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
+	passwordConfirm := r.FormValue("password-confirm")
 	username := r.FormValue("username")
+	viewData.Data.CreateUserMes = ""
 	var createUser bool
-	if username != "" || password != "" {
+
+	if username == "" || password == "" {
+		viewData.Data.CreateUserMes = "Username or Password can't be empty"
+	}
+	if password != passwordConfirm {
+		viewData.Data.CreateUserMes = "Passwords Doesn't Match"
+
+	} else if username != "" || password != "" {
 		createUser = jsonMod.SaveUserJson(username, password)
 	}
 
 	if createUser {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+	} else if viewData.Data.CreateUserMes == "" {
+		viewData.Data.CreateUserMes = "Username is taken"
+		http.Redirect(w, r, "/create_user", http.StatusSeeOther)
 	} else {
 		http.Redirect(w, r, "/create_user", http.StatusSeeOther)
 	}
@@ -445,17 +282,17 @@ func authHandler(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, "/", http.StatusFound)
 
-		data.FailedLoginAttempt = false
+		viewData.Data.FailedLoginAttempt = false
 
-		data.CreateUser = false
+		viewData.Data.CreateUser = false
 	} else {
 		fmt.Println("login failed")
 		//http.Redirect(w, r, "/", http.StatusFound)
-		data.FailedLoginAttempt = true
+		viewData.Data.FailedLoginAttempt = true
 
-		data.CreateUser = false
+		viewData.Data.CreateUser = false
 
-		MainMenuIndex(w, data)
+		routes.MainMenuIndex(w, viewData.Data)
 
 	}
 
@@ -471,16 +308,17 @@ func main() {
 	http.Handle("/theme/", http.StripPrefix("/theme/", http.FileServer(http.Dir("theme"))))
 	http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("scripts"))))
 
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", routes.MainHandler)
+	http.HandleFunc("/api/words", routes.WordsApiHandler)
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/create_user", createUserHandler)
 	http.HandleFunc("/create_user_submit", createUserSubmitHandler)
 	http.HandleFunc("/auth", authHandler)
 	http.HandleFunc("/question", questionHandler)
-	http.HandleFunc("/submit", submitHandler)
-	http.HandleFunc("/next", nextHandler)
-	http.HandleFunc("/prev", prevHandler)
+	http.HandleFunc("/submit", routes.SubmitHandler)
+	http.HandleFunc("/next", routes.NextHandler)
+	http.HandleFunc("/prev", routes.PrevHandler)
 	http.HandleFunc("/wordlist_changed", wordlistChangeHandler)
 	http.HandleFunc("/wordcount_changed", wordcountChangeHandler)
 	http.HandleFunc("/language_changed", languageChangeHandler)

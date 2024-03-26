@@ -6,32 +6,30 @@
     <title>Azla Language Learning</title>
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     <link rel="stylesheet" href="theme/dark-style.css">
+    <link rel="stylesheet" href="theme/phone-style.css">
 </head>
 <body>
-<script>
-    // Function to hide the message after a certain amount of time
-    function hideMessageAfterTimeout(id) {
-        setTimeout(function() {
-            var message = document.getElementById(id);
-            if (message) {
-                message.style.display = 'none'; // Hide the message
-            }
-        }, 5000); // 5000 milliseconds = 5 seconds
-    }
-
-    function hideWindowAfterTimeout(id) {
-        setTimeout(function() {
-            var message = document.getElementById(id);
-            if (message) {
-                message.style.display = 'none'; // Hide the message
-            }
-        }, 5000); // 5000 milliseconds = 5 seconds
-    }
-</script>
+    <script src="scripts/script.js"></script>
     <center>
     <form hx-post="/question" id='MainMenu'>
         {{ if .IsSignedIn }} 
         <div class='main-list'>
+            <ul>
+                <li><a href="default.asp">Home</a></li>
+                <li><a href="contact.asp">Wordlists</a></li>
+                <li><a hx-post='/logout' hx-target='#MainMenu'>Sign Out</a></li>
+            </ul>
+            <span class='account-dropdown'>
+                <button name="account" 
+                        id='dropdown-button' 
+                        class='dropbtn'
+                        onclick="dropDownToggle(event)"
+                        >≡</button>
+            </span>
+            <div class='options-container' id='optionsContainer'>
+                <div><button class='dropdown-buttons' style="box-shadow: none;" hx-post='/add_word' hx-target='#MainMenu'>Add New Wordlist</button></div>
+                <div><button class='dropdown-buttons' style="box-shadow: none;" hx-post='/logout' hx-target='#MainMenu'>Sign Out</button></div>
+            </div>
             <div class="title-container">
                 <h1 class="app-title" id="app-title"><center>Azla Language Learning<center></h1>
             </div>
@@ -74,49 +72,45 @@
                 <input type="checkbox" id="examCheck" name="examMode" value="Exam Mode">
                 <label for="examCheck" class='checkbox-label'>Exam Mode</label>
             </div>
-            <div>
-                <button style="margin-top: 60px; margin-top: 10px;"
-                        type="submit" 
-                        name="Add-Words" 
-                        id='startButton' 
-                        class='exitbtn' 
-                        hx-post='/add_word' hx-target='#MainMenu'>Add Words</button>
-            </div>
-            <div>
-                <button style="margin-top: 60px;" 
-                        type="submit" 
-                        name="logout" 
-                        id='startButton' 
-                        class='exitbtn'
-                        hx-post='/logout' hx-target='#MainMenu'>Logout</button>
-            </div>
-    </div></form>
+        </div>
+    </form>
     </center>
         {{ else }} 
             <div id='loginMenu'>
             <div class='main-list'>
+            {{ if .CreateUser }}
+            <ul>
+                <li><a href="default.asp">Back</a></li>
+            </ul>
+            {{ end }}
             <div class="title-container">
                 <h1 class="app-title" id="app-title"><center>Azla Language Learning<center></h1>
             </div>
             <img class="image" src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg" alt="alternative-text" width="300" height="150">
             <h2>You are not Signed In</h2>
-                {{ if .FailedLoginAttempt }}
-                <div class='floatingWindow' id='floatingWindow'>
-                    <p id='addedMessage' class='errorMessage'>Inccorrect Username or Password</p>
-                </div>
-                <script>
-                    hideMessageAFterTimeout('addedMessage');
-                    hideWindowAFterTimeout('floatingWindow');
-                </script>
-                {{ end }}
                 {{ if .CreateUser }}
                   <p>Create User Account<p>
+                  {{ if .CreateUserMes }}
+                    <p>{{ .CreateUserMes }}</p>
+                  {{ end }}
                 {{ else }}
                   <h3>Login to Azla<h3>
+
+                  {{ if .FailedLoginAttempt }}
+                     <div class='popup' id='popUpError'>
+                         <span class='popuptext' id='myPopup' >Incorrect Username or Password</span>
+                     </div>
+                  <script>
+                      hideMessageAfterTimeout('wrongPassword');
+                      hideWindowAfterTimeout('popUpError');
+                  </script>
+                  {{ end }}
                 {{ end }}
                 <div><input class='input-box' type="text" placeholder="Username" name="username" /></div>
-                <div><input class='input-box' type="password" placeholder="Password" name="password" /></div>
+                <div style="margin: 10px;"></div>  
+                <div><input style="box-shadow: none;" class='input-box' type="password" placeholder="Password" name="password" /></div>
                 {{ if .CreateUser }}
+                  <div><input style="box-shadow: none;"class='input-box' type="password" placeholder="Confirm Password" name="password-confirm" /></div>
                   <button class='create-user' type='submit' hx-post='/create_user_submit' hx-target='#loginMenu' hx-target='MainMenu'>Create Account</button>
                 {{ else }}
                   <div>

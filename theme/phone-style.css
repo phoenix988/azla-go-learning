@@ -2,6 +2,7 @@
 @media screen and (max-width: 600px) {
   .openbtn {
     position: absolute;
+    font-size: 20px; /* Reduce the font size */
     top: 20px; /* Adjust the top margin to create space for the title */
     left: -20px; /* Adjust the left margin */
     font-size: 24px; /* Reduce the font size */
@@ -12,9 +13,10 @@
   }
 
   .app-title {
-    margin-right: 17px;
-    margin-top: 5px;
     font-size: 26px;
+    padding: 0px;
+    margin-top: 10px;
+    margin-left: 10px;
   }
 
   .text-main {
@@ -70,11 +72,16 @@
     width: 60%; /* Width of the select box */
   }
 
+  ul {
+    background-color: #161821;
+  }
+
   .startButton {
     width: 60%;
     background-color: #84a0c6; /* Background color when checked */
     width: 60%;
   }
+
   .backButton {
     width: 60%;
     margin-bottom: 20px;
@@ -83,14 +90,19 @@
     width: 29%;
   }
 
-  .exitbtn {
-    position: relative;
-    margin-bottom: 0px;
-    background-color: #84a0c6; /* Background color when checked */
-    width: 60%;
+  .dropbtn {
+    font-size: 20px;
   }
 
   .new-words[type="text"] {
     width: 40%;
+  }
+
+  .phone-ul {
+    background-color: #333333;
+  }
+
+  .fontSizeMedium {
+    font-size: 16px;
   }
 }

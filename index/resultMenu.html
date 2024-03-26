@@ -1,6 +1,7 @@
 <div id="resultMenu">
   <form hx-post="/">
     <div class="main-list">
+      <h1 class="app-title" id="app-title"><center>AZLA<center></h1>
       <img
         class="image"
         src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg"
@@ -9,7 +10,7 @@
         height="150"
       />
       <h1 class="app-title">Result:</h1>
-      <ul>
+      <ul style="background-color: #161821;">
         {{ if .CorrectAnswersList }}
         <h2>Correct Answers: {{.CorrectAnswers}}</h2>
         {{ end }} {{ range $correct, $answer := .CorrectAnswersList }}
