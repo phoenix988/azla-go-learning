@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head> </head>
+  <body>
+    <script src="scripts/script.js"></script>
+    <form hx-post="{{.ExamModeAction}}" id="questionForm">
+      <div id="questionWindow">
+        <div class="main-list">
+          <ul>
+            <li><a hx-post="/" hx-target="#questionWindow">Home</a></li>
+            <li><a hx-post="/logout" hx-target="#MainMenu">Sign Out</a></li>
+          </ul>
+          <div>
+            <button
+              class="openbtn"
+              type="button"
+              onclick="openNav(event)"
+              style="margin: 50px"
+            >
+              ≡
+            </button>
+          </div>
+          <div class="word-tree" id="word-tree">
+            <div class="title-container">
+              <button
+                class="openbtn"
+                id="openBtn"
+                type="button"
+                onclick="closeNav()"
+                style="margin: 50px"
+              >
+                ≡
+              </button>
+            </div>
+            <h2>List of Questions</h2>
+            <ul id="myForm" class="word-list">
+              {{ range $index, $word := .AvailableWords}} {{ if ne $index 0}}
+              <form action="/jump" method="post">
+                <input
+                  name="index"
+                  type="text"
+                  id="invisibleInput"
+                  value="{{$index}}"
+                  style="display: none"
+                />
+                <div>
+                  <li>
+                    <a hx-post="/jump" hx-target="#questionForm"
+                      >{{$index}} - {{$word}}</a
+                    >
+                  </li>
+                </div>
+              </form>
+              {{ end }} {{ end }}
+            </ul>
+          </div>
+          <div class="title-container">
+            <h1 class="app-title">Azla Questions</h1>
+          </div>
+          <img
+            class="image2"
+            src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg"
+            alt="alternative-text"
+            width="300"
+            height="150"
+            style="margin-bottom: 20px"
+          />
+          <h3>You are using the {{ .SelectedWordList }} Wordlist</h3>
+          {{ if .WordImage }}
+          <img class="image2" src="{{ .WordImage }}" width="250" height="100" />
+          {{ end }}
+          <p class="questionString" id="wordQuestion">
+            <span> {{.CurrentIndex}} </span> What is
+            <span class="wordQuestion"> {{.CurrentWord}} </span> in
+            <span class="wordLanguage"> {{.SelectedLanguage}} </span> ?
+          </p>
+          <div>
+            <input
+              type="text"
+              placeholder="Input Your Answer"
+              name="answer"
+              style="box-shadow: none"
+            />
+          </div>
+          <ul
+            style="
+              background-color: #161821;
+              border-radius: 0px;
+              margin-top: 20px;
+            "
+          >
+            <button
+              type="submit"
+              name="prev"
+              class="moveButtons"
+              style="box-shadow: none; margin-bottom: 10px"
+              hx-post="/prev"
+              hx-target="#questionForm"
+            >
+              Previous
+            </button>
+            <button
+              type="submit"
+              class="moveButtons"
+              name="questionButton"
+              onclick="hidePanel()"
+              style="box-shadow: none; margin-bottom: 10px"
+            >
+              {{.ExamModeString}}
+            </button>
+          </ul>
+          <div class="margin-bottom"></div>
+        </div>
+      </div>
+    </form>
+  </body>
+</html>

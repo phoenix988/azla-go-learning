@@ -1,0 +1,41 @@
+<div id="resultMenu">
+  <form hx-post="/">
+    <div class="main-list">
+      <h1 class="app-title" id="app-title"><center>AZLA<center></h1>
+      <img
+        class="image"
+        src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Flag_of_Azerbaijan.svg"
+        alt="flag-of-azerbajani"
+        width="300"
+        height="150"
+      />
+      <h1 class="app-title">Result:</h1>
+      <ul style="background-color: #161821;">
+        {{ if .CorrectAnswersList }}
+        <h2>Correct Answers: {{.CorrectAnswers}}</h2>
+        {{ end }} {{ range $correct, $answer := .CorrectAnswersList }}
+        <div class="correct-text">
+          <h3>Correct: {{$correct}} Your Answer: {{$answer}}</h3>
+        </div>
+        {{ end }} {{ if .CorrectAnswersList }}
+        <p>----------------------------</p>
+        {{ end }} {{ if .InCorrectAnswersList }}
+        <h2>Incorrect Answers: {{.InCorrectAnswers}}</h2>
+        {{ end }} {{ range $correct, $answer := .InCorrectAnswersList }}
+        <div class="incorrect-text">
+          <h3>Correct: {{$correct}} Your Answer: {{$answer}}</h3>
+        </div>
+        {{ end }}
+      </ul>
+      <button
+        class="startButton"
+        type="submit"
+        hx-post="/next"
+        hx-target="#resultMenu"
+        style="margin-bottom: 20px"
+      >
+        Hide
+      </button>
+    </div>
+  </form>
+</div>
