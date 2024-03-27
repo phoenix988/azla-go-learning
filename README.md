@@ -6,7 +6,7 @@ The built in libary http for go
 
 ### Installation
 
-Requirements: Go 1.20 or later
+Requirements: Go 1.22.1 or later
 
 Install: Go
 

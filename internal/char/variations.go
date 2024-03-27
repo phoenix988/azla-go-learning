@@ -1,10 +1,13 @@
 package char
 
 import (
+	"azla_go_learning/internal/viewData"
+	"html/template"
+	"net/http"
 	"strings"
-    "net/http"
-    "azla_go_learning/internal/viewData"
-    "html/template"
+	"fmt"
+	"strconv"
+	"math/rand"
 )
 
 func VariationLoop(variations []string, specialCharacters map[string]string) []string {
@@ -44,10 +47,8 @@ func GenerateVariations(word string) []string {
 	variations = VariationLoop(variations, specialCharacters)
 	variations = VariationLoop(variations, specialCharacters)
 
-
 	return variations
 }
-
 
 func AppendStringAtIndex(slice []string, value string, index int) []string {
 	// Ensure the index is within the bounds of the slice
@@ -70,8 +71,6 @@ func AppendStringAtIndex(slice []string, value string, index int) []string {
 	return result
 }
 
-
-
 // Checks if you have minor mistakes
 func EvaluateAnswers(userAnswer string, currentCorrect string, w http.ResponseWriter) {
 	checkAltCorrect := false
@@ -90,7 +89,7 @@ func EvaluateAnswers(userAnswer string, currentCorrect string, w http.ResponseWr
 		viewData.Data.IsCorrect = true
 		viewData.Data.UserAnswer = userAnswer
 
-		tmpl, err := template.ParseFiles("index/response.html")
+		tmpl, err := template.ParseFiles(viewData.TemplatePath+"response.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -106,7 +105,7 @@ func EvaluateAnswers(userAnswer string, currentCorrect string, w http.ResponseWr
 		viewData.Data.IsCorrect = false
 		viewData.Data.UserAnswer = userAnswer
 
-		tmpl, err := template.ParseFiles("index/response.html")
+		tmpl, err := template.ParseFiles(viewData.TemplatePath+"response.html")
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -123,3 +122,29 @@ func EvaluateAnswers(userAnswer string, currentCorrect string, w http.ResponseWr
 	}
 
 }
+
+func ConvertToNum(word string) int {
+	// Convert selected word count to int
+	convertToNum, Err := strconv.Atoi(word)
+
+	if Err != nil {
+		fmt.Println("Error:", Err)
+	} else {
+		return convertToNum
+	}
+
+	return 0
+}
+
+
+func GenerateSessionID() string {
+    // Generate a random session ID (dummy example)
+    const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    b := make([]byte, 32)
+    for i := range b {
+        b[i] = letters[rand.Intn(len(letters))]
+    }
+    return string(b)
+}
+
+

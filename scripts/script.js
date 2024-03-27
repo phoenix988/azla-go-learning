@@ -1,4 +1,5 @@
-function openNav() {
+function openNav(event) {
+    event.preventDefault();
     var panel = document.getElementById("word-tree");
     var openbtn = document.getElementById("openBtn");
     panel.style.transform = "translateX(0)";
@@ -117,3 +118,27 @@ document.addEventListener("click", function(event) {
         }
     }
 });
+
+function jumpToQuestion(index) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/jump?index=" + index, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send();
+}
+
+function sendIndex(element) {
+    var index = element.getAttribute("name");
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/handleIndex", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                console.log("Response from server:", xhr.responseText);
+            } else {
+                console.error("Error:", xhr.statusText);
+            }
+        }
+    };
+    xhr.send(JSON.stringify({ index: index }));
+}

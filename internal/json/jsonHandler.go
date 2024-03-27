@@ -11,11 +11,12 @@ import (
 var JsonPath = "data/data.json"
 var JsonPathUser = "data/users.json"
 
-
+// Wordlist data
 type wordsData struct {
 	Wordlist map[string]map[string]map[string]string `json:"wordlist"`
 }
 
+// User information map
 type User struct {
 	User map[string]map[string]string
 }

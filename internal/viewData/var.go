@@ -8,7 +8,7 @@ import (
 type PageData struct {
 	WordListOptions         []string // Wordlist options
 	WordList                map[string]map[string]string
-	WordListName            string
+	WordListName            string   // Name of wordlist 
 	SelectedWordList        string   // Selected wordlist option
 	SelectedLanguage        string   // Selected Language Option
 	Words                   []string // For all words
@@ -37,9 +37,18 @@ type PageData struct {
 	UserAnswer              string
 	IsCorrect               bool
 	WordImage               string
-	CreateUserMes           string
+	CreateUserMes           string // User message when register user
 }
 
+// User information struct
+type User struct {
+	ID       int
+	Username string
+	Password string // Hashed password
+}
+
+type AzlaConfig struct {
+}
 
 var Data = PageData{}
 
@@ -52,8 +61,14 @@ var AmountOfWords = []int{5, 10, 15, 20, 25, 30} // Amount of words to choose fr
 // Create session store
 var Store = sessions.NewCookieStore([]byte("secret-key"))
 
+// Path to html templates
+var TemplatePath = "templates/"
+
+// Template the main question template
 func CreateQuestionTemp() (*template.Template, error) {
-	tmpl, err := template.ParseFiles("index/questionAsk.html")
+	tmpl, err := template.ParseFiles(TemplatePath+"questions.html")
 
 	return tmpl, err
 }
+
+
